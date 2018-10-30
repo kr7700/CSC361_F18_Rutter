@@ -1,7 +1,6 @@
 package com.packetpub.libgdx.rutter.screens;
 
 import com.badlogic.gdx.Game;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.packetpub.libgdx.rutter.game.WorldController;
@@ -17,7 +16,7 @@ public class GameScreen extends AbstractGameScreen
 
 	private static final String TAG = GameScreen.class.getName();
 
-	private WorldController worldController;
+	private WorldController worldController = new WorldController();
 	private WorldRenderer worldRenderer;
 
 	private boolean paused;
@@ -45,6 +44,7 @@ public class GameScreen extends AbstractGameScreen
 		if (!paused)
 		{
 			// Update game world by the time that has passed since last update
+			System.out.println("DT: "+deltaTime);
 			worldController.update(deltaTime);
 		}
 
