@@ -96,7 +96,7 @@ public class WorldController extends InputAdapter
 		//Create a list of texture regions
 		Array<TextureRegion> regions = new Array<TextureRegion>();
 		regions.add(Assets.instance.riceball.riceball);
-		regions.add(Assets.instance.nori.nori);
+		regions.add(Assets.instance.bug.bug);
 		regions.add(Assets.instance.ricegrain.ricegrain);
 		
 		// Create new sprites using random texture region
@@ -125,6 +125,7 @@ public class WorldController extends InputAdapter
 	 */
 	public void update(float deltaTime)
 	{
+		System.out.println("DT: "+deltaTime);
 		handleDebugInput(deltaTime);
 		updateTestObjects(deltaTime);
 		cameraHelper.update(deltaTime);
