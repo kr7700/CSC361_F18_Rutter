@@ -58,16 +58,16 @@ public class Background extends AbstractGameObject
 		float yRel = dimension.y * offsetY;
 
 		// background spans the whole level
-		int length = 0;
-		length += MathUtils.ceil(length / (2 * dimension.x));
-		length += MathUtils.ceil(0.6f + offsetX);
+		int backgroundLength = 0;
+		backgroundLength += MathUtils.ceil(length / (2 * dimension.x));
+		backgroundLength += MathUtils.ceil(0.6f + offsetX);
 
-		for (int i = 0; i < length; i++)
+		for (int i = 0; i < backgroundLength; i++)
 		{
 			// grass
 			reg = regGrass;
-			batch.draw(reg.getTexture(), origin.x + xRel, position.y + origin.y, origin.x, origin.y, dimension.x,
-					dimension.y, scale.x, scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(),
+			batch.draw(reg.getTexture(), origin.x + xRel + position.x, origin.y + yRel + position.y, origin.x, origin.y, dimension.x,
+					dimension.y, scale.x, scale.y*1.4f, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(),
 					reg.getRegionHeight(), false, false);
 			xRel += dimension.x;
 		}
@@ -92,16 +92,16 @@ public class Background extends AbstractGameObject
 		float yRel = dimension.y * offsetY;
 
 		// background spans the whole level
-		int length = 0;
-		length += MathUtils.ceil(length / (2 * dimension.x));
-		length += MathUtils.ceil(0.6f + offsetX);
+		int backgroundLength = 0;
+		backgroundLength += MathUtils.ceil(length / (2 * dimension.x));
+		backgroundLength += MathUtils.ceil(0.6f + offsetX);
 
-		for (int i = 0; i < length; i++)
+		for (int i = 0; i < backgroundLength; i++)
 		{
 			// fence
 			reg = regFence;
-			batch.draw(reg.getTexture(), origin.x + xRel, position.y + origin.y, origin.x, origin.y, dimension.x,
-					dimension.y, scale.x, scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(),
+			batch.draw(reg.getTexture(), origin.x + xRel + position.x, origin.y + yRel + position.y, origin.x, origin.y, dimension.x,
+					dimension.y, scale.x, scale.y*2, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(),
 					reg.getRegionHeight(), false, false);
 			xRel += dimension.x;
 		}
@@ -119,7 +119,7 @@ public class Background extends AbstractGameObject
 	public void render(SpriteBatch batch)
 	{
 		// fences in the farthest background layer
-		drawFence(batch, 0.5f, 0.5f, 0.5f);
+		drawFence(batch, 0.5f, 0f, 0.5f);
 
 		// grass in the second background layer
 		drawGrass(batch, 0.25f, 0.25f, 0.7f);

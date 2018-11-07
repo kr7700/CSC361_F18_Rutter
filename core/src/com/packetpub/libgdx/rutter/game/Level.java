@@ -6,7 +6,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.packetpub.libgdx.rutter.game.objects.AbstractGameObject;
 import com.packetpub.libgdx.rutter.game.objects.Background;
+import com.packetpub.libgdx.rutter.game.objects.Bug;
 import com.packetpub.libgdx.rutter.game.objects.Dirt;
+import com.packetpub.libgdx.rutter.game.objects.Gun;
+import com.packetpub.libgdx.rutter.game.objects.Nori;
+import com.packetpub.libgdx.rutter.game.objects.RiceBall;
+import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
 import com.packetpub.libgdx.rutter.game.objects.WaterOverlay;
 
 /**
@@ -65,6 +70,11 @@ public class Level
 	
 	// objects
 	public Array<Dirt> dirtPlatforms;
+	public RiceBall riceBall;
+	public Array<Bug> bugs;
+	public Array<Gun> guns;
+	public Array<Nori> nori;
+	public Array<RiceGrain> ricegrains;
 	
 	//decoration
 	public Background background;
@@ -85,8 +95,13 @@ public class Level
 	 */
 	private void init(String filename)
 	{
+		riceBall = null;
 		//objects
 		dirtPlatforms = new Array<Dirt>();
+		bugs = new Array<Bug>();
+		guns = new Array<Gun>();
+		nori = new Array<Nori>();
+		ricegrains = new Array<RiceGrain>();
 		
 		//load image file that represents the level data
 		Pixmap pixmap = new Pixmap(Gdx.files.internal(filename));
@@ -111,7 +126,7 @@ public class Level
 					//do nothing
 				}
 				
-				//rock
+				// dirt
 				else if(BLOCK_TYPE.DIRT.sameColor(currentPixel))
 				{
 					if(lastPixel != currentPixel)
@@ -121,7 +136,8 @@ public class Level
 						offsetHeight = -2.5f;
 						obj.position.set(pixelX, baseHeight * obj.dimension.y * heightIncreaseFactor + offsetHeight);
 						dirtPlatforms.add((Dirt)obj);
-					}else
+					}
+					else
 					{
 						dirtPlatforms.get(dirtPlatforms.size - 1).increaseLength(1);
 					}
@@ -130,23 +146,46 @@ public class Level
 				//player spawn point
 				else if (BLOCK_TYPE.PLAYER_SPAWNPOINT.sameColor(currentPixel))
 				{
+					obj = new RiceBall();
+					offsetHeight = -2.5f;
+					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
+					riceBall = (RiceBall) obj;
 				}
 				
-				//feather
+				//bug
 				else if(BLOCK_TYPE.ITEM_BUG.sameColor(currentPixel))
 				{
+					obj = new Bug();
+					offsetHeight = -4.5f;
+					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
+					bugs.add((Bug) obj);
 				}
+				
 				//gun
 				else if(BLOCK_TYPE.ITEM_GUN.sameColor(currentPixel))
 				{
+					obj = new Gun();
+					offsetHeight = -1.5f;
+					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
+					guns.add((Gun) obj);
 				}
+				
 				//nori
 				else if(BLOCK_TYPE.ITEM_NORI.sameColor(currentPixel))
 				{
+					obj = new Nori();
+					offsetHeight = -1.5f;
+					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
+					nori.add((Nori) obj);
 				}
+				
 				//rice grain
 				else if(BLOCK_TYPE.ITEM_RICE_GRAIN.sameColor(currentPixel))
 				{
+					obj = new RiceGrain();
+					offsetHeight = -1.5f;
+					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
+					ricegrains.add((RiceGrain) obj);
 				}
 				
 				//unknown object/pixel color
@@ -183,6 +222,25 @@ public class Level
 		//Draw dirt platforms
 		for(Dirt dirt : dirtPlatforms)
 			dirt.render(batch);
+		
+		//Draw bugs
+		for (Bug bug : bugs)
+			bug.render(batch);
+		
+		//Draw guns
+		for (Gun gun : guns)
+			gun.render(batch);
+		
+		//Draw Nori
+		for (Nori individualNori : nori)
+			individualNori.render(batch);
+		
+		//Draw Rice Grains
+		for (RiceGrain ricegrain : ricegrains)
+			ricegrain.render(batch);
+		
+		//Draw Player Character
+		riceBall.render(batch);
 		
 		//Draw Water overlay
 		waterOverlay.render(batch);

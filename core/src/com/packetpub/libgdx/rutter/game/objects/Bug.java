@@ -28,7 +28,7 @@ public class Bug extends AbstractGameObject
 	 */
 	private void init()
 	{
-		dimension.set(1f, 2f);
+		dimension.set(1f, 2.0f);
 
 		regBug = Assets.instance.bug.bug;
 
@@ -49,7 +49,7 @@ public class Bug extends AbstractGameObject
 		TextureRegion reg = null;
 		reg = regBug;
 		batch.draw(reg.getTexture(), position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x,
-				scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionWidth(),
+				scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(),
 				false, false);
 	}
 

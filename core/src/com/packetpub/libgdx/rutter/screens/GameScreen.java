@@ -44,7 +44,6 @@ public class GameScreen extends AbstractGameScreen
 		if (!paused)
 		{
 			// Update game world by the time that has passed since last update
-			System.out.println("DT: "+deltaTime);
 			worldController.update(deltaTime);
 		}
 
