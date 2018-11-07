@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.packetpub.libgdx.rutter.game.objects.AbstractGameObject;
-import com.packetpub.libgdx.rutter.game.objects.BackGround;
+import com.packetpub.libgdx.rutter.game.objects.Background;
 import com.packetpub.libgdx.rutter.game.objects.Dirt;
 import com.packetpub.libgdx.rutter.game.objects.WaterOverlay;
 
