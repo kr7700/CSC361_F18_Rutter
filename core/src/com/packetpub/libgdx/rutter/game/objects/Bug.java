@@ -7,47 +7,47 @@ import com.packetpub.libgdx.rutter.game.Assets;
 
 /**
  * @author Kevin Rutter
- * Contains methods for the Nori game object (acts like a mushroom in Mario)
+ * Contains methods for the bug game object. (inflicts 1 point of damage, dies on contact or after shot)
  */
-public class Nori extends AbstractGameObject
+public class Bug extends AbstractGameObject
 {
-	private TextureRegion regNori;
+	private TextureRegion regBug;
 
-	public boolean collected;
+	public boolean killed;
 
 	/**
 	 * Constructor, just calls init
 	 */
-	public Nori()
+	public Bug()
 	{
 		init();
 	}
 
 	/**
-	 * Sets its dimension, gets nori texture, and then sets its bounds
+	 * Sets its dimension, gets bug texture, and then sets its bounds
 	 */
 	private void init()
 	{
-		dimension.set(0.5f, 0.5f);
+		dimension.set(1f, 2.0f);
 
-		regNori = Assets.instance.nori.nori;
+		regBug = Assets.instance.bug.bug;
 
 		// Set bounding box for collision detection
 		//bounds.set(0, 0, dimension.x, dimension.y);
 
-		collected = false;
+		killed = false;
 	}
 
 	/**
-	 * This draws the nori so long as it hasn't been collected at desired location.
+	 * This draws the bug so long as it hasn't been killed at the given location.
 	 */
 	public void render(SpriteBatch batch)
 	{
-		if (collected)
+		if (killed)
 			return;
 
 		TextureRegion reg = null;
-		reg = regNori;
+		reg = regBug;
 		batch.draw(reg.getTexture(), position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x,
 				scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(),
 				false, false);
@@ -60,6 +60,6 @@ public class Nori extends AbstractGameObject
 	 */
 	public int getScore()
 	{
-		return 30;
+		return 50;
 	}
 }

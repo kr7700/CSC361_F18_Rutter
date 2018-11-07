@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.packetpub.libgdx.rutter.game.objects.AbstractGameObject;
 
 /**
  * @author Kevin Rutter
@@ -19,7 +20,7 @@ public class CameraHelper
 
 	private Vector2 position;
 	private float zoom;
-	private Sprite target;
+	private AbstractGameObject target;
 
 	/**
 	 * Constructor for the class, initializes positon and zoom
@@ -40,8 +41,8 @@ public class CameraHelper
 		if (!hasTarget())
 			return;
 
-		position.x = target.getX() + target.getOriginX();
-		position.y = target.getY() + target.getOriginY();
+		position.x = target.position.x + target.origin.x;
+		position.y = target.position.y + target.origin.y;
 	}
 
 	/**
@@ -96,11 +97,11 @@ public class CameraHelper
 	}
 
 	/**
-	 * Sets what Sprite object is our object
+	 * Sets what AbstracGameObject is our object
 	 * 
 	 * @param target desired target
 	 */
-	public void setTarget(Sprite target)
+	public void setTarget(AbstractGameObject target)
 	{
 		this.target = target;
 	}
@@ -110,7 +111,7 @@ public class CameraHelper
 	 * 
 	 * @return current target
 	 */
-	public Sprite getTarget()
+	public AbstractGameObject getTarget()
 	{
 		return target;
 	}
