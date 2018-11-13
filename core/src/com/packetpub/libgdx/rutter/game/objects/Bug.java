@@ -62,4 +62,12 @@ public class Bug extends AbstractGameObject
 	{
 		return 50;
 	}
+	
+	/**
+	 * Returns name of object
+	 */
+	public String toString()
+	{
+		return "bug";
+	}
 }

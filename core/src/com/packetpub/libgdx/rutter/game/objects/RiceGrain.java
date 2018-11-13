@@ -65,4 +65,12 @@ public class RiceGrain extends AbstractGameObject
 	{
 		return 10;
 	}
+	
+	/**
+	 * Returns name of object
+	 */
+	public String toString()
+	{
+		return "ricegrain";
+	}
 }

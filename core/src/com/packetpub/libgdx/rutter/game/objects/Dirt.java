@@ -100,4 +100,12 @@ public class Dirt extends AbstractGameObject
 				scale.x, scale.y, rotation, reg.getRegionX(), reg.getRegionY(),
 				reg.getRegionWidth(), reg.getRegionHeight(), true, false);
 	}
+	
+	/**
+	 * Returns name of object
+	 */
+	public String toString()
+	{
+		return "dirt";
+	}
 }
