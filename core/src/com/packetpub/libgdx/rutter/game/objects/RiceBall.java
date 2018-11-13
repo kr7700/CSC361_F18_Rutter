@@ -32,6 +32,8 @@ public class RiceBall extends AbstractGameObject
 	public JUMP_STATE jumpState;
 	public int bullets;
 	public int health;
+
+	public boolean isJumping = false;
 	
 	/**
 	 * Constructor for riceball, calls init()
@@ -193,5 +195,13 @@ public class RiceBall extends AbstractGameObject
 		//Draw image
 		reg = regBall;
 		batch.draw(reg.getTexture(),position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x, scale.y, rotation,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), viewDirection == VIEW_DIRECTION.LEFT, false);
+	}
+	
+	/**
+	 * Returns name of object
+	 */
+	public String toString()
+	{
+		return "riceball";
 	}
 }

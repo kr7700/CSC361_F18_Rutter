@@ -68,4 +68,12 @@ public class Gun extends AbstractGameObject
 	{
 		return 30;
 	}
+	
+	/**
+	 * Returns name of object
+	 */
+	public String toString()
+	{
+		return "gun";
+	}
 }

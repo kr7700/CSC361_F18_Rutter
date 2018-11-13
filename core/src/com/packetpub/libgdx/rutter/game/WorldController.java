@@ -11,7 +11,9 @@ import com.packetpub.libgdx.rutter.game.objects.Dirt;
 import com.packetpub.libgdx.rutter.game.objects.Gun;
 import com.packetpub.libgdx.rutter.game.objects.Nori;
 import com.packetpub.libgdx.rutter.game.objects.RiceBall;
+import com.packetpub.libgdx.rutter.game.objects.RiceBall.JUMP_STATE;
 import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
+import com.packetpub.libgdx.rutter.util.B2Listener;
 import com.packetpub.libgdx.rutter.util.CameraHelper;
 import com.packetpub.libgdx.rutter.util.Constants;
 import com.badlogic.gdx.Application.ApplicationType;
@@ -25,9 +27,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 
 /**
  * @author Kevin Rutter
@@ -48,6 +52,7 @@ public class WorldController extends InputAdapter implements Disposable
 	public int score;
 	
 	public World b2world;
+	public B2Listener listener;
 	
 	/**
 	 * Constructor for WorldController.
@@ -76,6 +81,8 @@ public class WorldController extends InputAdapter implements Disposable
 	{
 		score = 0;
 		level = new Level(Constants.LEVEL_01);
+		cameraHelper.setTarget(level.riceBall);
+		listener = new B2Listener(level);
 		initPhysics();
 	}
 	
@@ -104,6 +111,7 @@ public class WorldController extends InputAdapter implements Disposable
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = polygonShape;
 			body.createFixture(fixtureDef);
+			body.setUserData(dirt);
 			polygonShape.dispose();
 		}
 		
@@ -124,6 +132,7 @@ public class WorldController extends InputAdapter implements Disposable
 			fixtureDef.density = 50;
 			fixtureDef.restitution = 0.5f;
 			body.createFixture(fixtureDef);
+			body.setUserData(bug);
 			polygonShape.dispose();
 		}
 		
@@ -142,6 +151,7 @@ public class WorldController extends InputAdapter implements Disposable
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = polygonShape;
 			body.createFixture(fixtureDef);
+			body.setUserData(gun);
 			polygonShape.dispose();
 		}
 		
@@ -160,6 +170,7 @@ public class WorldController extends InputAdapter implements Disposable
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = polygonShape;
 			body.createFixture(fixtureDef);
+			body.setUserData(nori);
 			polygonShape.dispose();
 		}
 		
@@ -178,6 +189,7 @@ public class WorldController extends InputAdapter implements Disposable
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = polygonShape;
 			body.createFixture(fixtureDef);
+			body.setUserData(grain);
 			polygonShape.dispose();
 		}
 		
@@ -194,12 +206,14 @@ public class WorldController extends InputAdapter implements Disposable
 		polygonShape.setAsBox(ball.dimension.x /2.0f, ball.dimension.y / 2.0f, origin, 0);
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = polygonShape;
-		fixtureDef.density = 50;
-		fixtureDef.restitution = 0.5f;
-		fixtureDef.friction = 0.5f;
+		fixtureDef.density = 10;
+		fixtureDef.restitution = 0.1f;
+		fixtureDef.friction = 0.98f;
 		body.createFixture(fixtureDef);
+		body.setUserData(ball);
 		polygonShape.dispose();
 		
+        b2world.setContactListener(listener);
 	}
 	
 	/**
@@ -220,12 +234,40 @@ public class WorldController extends InputAdapter implements Disposable
 	}
 	
 	/**
+	 * Handles movement and jumping of the bunnyhead.
+	 * 
+	 * @param deltaTime
+	 *            How much time has passed since last frame.
+	 */
+	private void handleInputGame(float deltaTime)
+	{
+		if (cameraHelper.hasTarget())
+		{
+			// Player Movement
+			if (Gdx.input.isKeyPressed(Keys.LEFT))
+			{
+				level.riceBall.body.applyForceToCenter(-500, 0, true);
+			}
+			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
+			{
+				level.riceBall.body.applyForceToCenter(500, 0, true);
+			}
+			if (Gdx.input.isKeyJustPressed(Keys.SPACE) && !level.riceBall.isJumping)
+			{
+				level.riceBall.isJumping = true;
+				level.riceBall.body.applyForceToCenter(0, 3000, true);
+			}
+		}
+	}
+	
+	/**
 	 * Applies updates to the game world many times a second.
 	 * @param deltaTime		How much time has passed since last frame.
 	 */
 	public void update(float deltaTime)
 	{
-		handleDebugInput(deltaTime);
+		//handleDebugInput(deltaTime);
+		handleInputGame(deltaTime);
 		level.update(deltaTime);
 		b2world.step(deltaTime, 8, 3);
 		cameraHelper.update(deltaTime);
