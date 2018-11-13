@@ -1,7 +1,9 @@
 package com.packetpub.libgdx.rutter.game.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 /**
  * Makes an abstract class for all game objects to structure themselves around
@@ -15,6 +17,8 @@ public abstract class AbstractGameObject
 	public Vector2 origin;
 	public Vector2 scale;
 	public float rotation;
+	
+	public Body body;
 	
 	/**
 	 * Builds the game object
@@ -33,7 +37,9 @@ public abstract class AbstractGameObject
 	 * @param deltaTime		Time since last frame
 	 */
 	public void update (float deltaTime)
-	{	
+	{
+		position.set(body.getPosition());
+		rotation = body.getAngle() * MathUtils.radiansToDegrees;
 	}
 	
 	/**

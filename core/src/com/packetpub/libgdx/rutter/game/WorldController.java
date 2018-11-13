@@ -6,6 +6,12 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
+import com.packetpub.libgdx.rutter.game.objects.Bug;
+import com.packetpub.libgdx.rutter.game.objects.Dirt;
+import com.packetpub.libgdx.rutter.game.objects.Gun;
+import com.packetpub.libgdx.rutter.game.objects.Nori;
+import com.packetpub.libgdx.rutter.game.objects.RiceBall;
+import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
 import com.packetpub.libgdx.rutter.util.CameraHelper;
 import com.packetpub.libgdx.rutter.util.Constants;
 import com.badlogic.gdx.Application.ApplicationType;
@@ -14,13 +20,21 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 
 /**
  * @author Kevin Rutter
  * Contains controls for the game, such as for the camera, movement, etc.
  * (Based on CanyonBunny WorldController)
  */
-public class WorldController extends InputAdapter
+public class WorldController extends InputAdapter implements Disposable
 {
 	// Tag used for logging purposes
 	private static final String TAG =
@@ -32,6 +46,8 @@ public class WorldController extends InputAdapter
 	public Level level;
 	public int lives;
 	public int score;
+	
+	public World b2world;
 	
 	/**
 	 * Constructor for WorldController.
@@ -60,6 +76,130 @@ public class WorldController extends InputAdapter
 	{
 		score = 0;
 		level = new Level(Constants.LEVEL_01);
+		initPhysics();
+	}
+	
+	/**
+	 * Initialize the world and BodyDef objects in order to track physics in Box2D.
+	 */
+	private void initPhysics()
+	{
+		if (b2world != null)
+			b2world.dispose();
+		b2world = new World(new Vector2(0, -9.81f), true);
+		
+		// Dirt platforms
+		Vector2 origin = new Vector2();
+		for (Dirt dirt : level.dirtPlatforms)
+		{
+			BodyDef bodyDef = new BodyDef();
+			bodyDef.type = BodyType.KinematicBody;
+			bodyDef.position.set(dirt.position);
+			Body body = b2world.createBody(bodyDef);
+			dirt.body = body;
+			PolygonShape polygonShape = new PolygonShape();
+			origin.x = dirt.bounds.width / 2.0f;
+			origin.y = dirt.bounds.height / 2.0f;
+			polygonShape.setAsBox(dirt.bounds.width / 2.0f, dirt.bounds.height / 2.0f, origin, 0);
+			FixtureDef fixtureDef = new FixtureDef();
+			fixtureDef.shape = polygonShape;
+			body.createFixture(fixtureDef);
+			polygonShape.dispose();
+		}
+		
+		// Bugs
+		for (Bug bug : level.bugs)
+		{
+			BodyDef bodyDef = new BodyDef();
+			bodyDef.type = BodyType.DynamicBody;
+			bodyDef.position.set(bug.position);
+			Body body = b2world.createBody(bodyDef);
+			bug.body = body;
+			PolygonShape polygonShape = new PolygonShape();
+			origin.x = bug.dimension.x / 2.0f;
+			origin.y = bug.dimension.y / 2.0f;
+			polygonShape.setAsBox(bug.dimension.x / 2.0f, bug.dimension.y / 2.0f, origin, 0);
+			FixtureDef fixtureDef = new FixtureDef();
+			fixtureDef.shape = polygonShape;
+			fixtureDef.density = 50;
+			fixtureDef.restitution = 0.5f;
+			body.createFixture(fixtureDef);
+			polygonShape.dispose();
+		}
+		
+		// Guns
+		for (Gun gun : level.guns)
+		{
+			BodyDef bodyDef = new BodyDef();
+			bodyDef.type = BodyType.KinematicBody;
+			bodyDef.position.set(gun.position);
+			Body body = b2world.createBody(bodyDef);
+			gun.body = body;
+			PolygonShape polygonShape = new PolygonShape();
+			origin.x = gun.dimension.x / 2.0f;
+			origin.y = gun.dimension.y / 2.0f;
+			polygonShape.setAsBox(gun.dimension.x / 2.0f, gun.dimension.y / 2.0f, origin, 0);
+			FixtureDef fixtureDef = new FixtureDef();
+			fixtureDef.shape = polygonShape;
+			body.createFixture(fixtureDef);
+			polygonShape.dispose();
+		}
+		
+		// Nori
+		for (Nori nori : level.nori)
+		{
+			BodyDef bodyDef = new BodyDef();
+			bodyDef.type = BodyType.KinematicBody;
+			bodyDef.position.set(nori.position);
+			Body body = b2world.createBody(bodyDef);
+			nori.body = body;
+			PolygonShape polygonShape = new PolygonShape();
+			origin.x = nori.dimension.x / 2.0f;
+			origin.y = nori.dimension.y / 2.0f;
+			polygonShape.setAsBox(nori.dimension.x / 2.0f, nori.dimension.y / 2.0f, origin, 0);
+			FixtureDef fixtureDef = new FixtureDef();
+			fixtureDef.shape = polygonShape;
+			body.createFixture(fixtureDef);
+			polygonShape.dispose();
+		}
+		
+		// RiceGrains
+		for (RiceGrain grain : level.ricegrains)
+		{
+			BodyDef bodyDef = new BodyDef();
+			bodyDef.type = BodyType.KinematicBody;
+			bodyDef.position.set(grain.position);
+			Body body = b2world.createBody(bodyDef);
+			grain.body = body;
+			PolygonShape polygonShape = new PolygonShape();
+			origin.x = grain.dimension.x / 2.0f;
+			origin.y = grain.dimension.y / 2.0f;
+			polygonShape.setAsBox(grain.dimension.x /2.0f, grain.dimension.y / 2.0f, origin, 0);
+			FixtureDef fixtureDef = new FixtureDef();
+			fixtureDef.shape = polygonShape;
+			body.createFixture(fixtureDef);
+			polygonShape.dispose();
+		}
+		
+		// RiceBall
+		RiceBall ball = level.riceBall;
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = BodyType.DynamicBody;
+		bodyDef.position.set(ball.position);
+		Body body = b2world.createBody(bodyDef);
+		ball.body = body;
+		PolygonShape polygonShape = new PolygonShape();
+		origin.x = ball.dimension.x / 2.0f;
+		origin.y = ball.dimension.y / 2.0f;
+		polygonShape.setAsBox(ball.dimension.x /2.0f, ball.dimension.y / 2.0f, origin, 0);
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = polygonShape;
+		fixtureDef.density = 50;
+		fixtureDef.restitution = 0.5f;
+		fixtureDef.friction = 0.5f;
+		body.createFixture(fixtureDef);
+		polygonShape.dispose();
+		
 	}
 	
 	/**
@@ -86,6 +226,8 @@ public class WorldController extends InputAdapter
 	public void update(float deltaTime)
 	{
 		handleDebugInput(deltaTime);
+		level.update(deltaTime);
+		b2world.step(deltaTime, 8, 3);
 		cameraHelper.update(deltaTime);
 	}
 	
@@ -137,5 +279,15 @@ public class WorldController extends InputAdapter
 		x += cameraHelper.getPosition().x;
 		y += cameraHelper.getPosition().y;
 		cameraHelper.setPosition(x, y);
+	}
+
+	/**
+	 * Frees up memory used by box2d's physics world.
+	 */
+	@Override
+	public void dispose()
+	{
+		if (b2world != null)
+			b2world.dispose();
 	}
 }

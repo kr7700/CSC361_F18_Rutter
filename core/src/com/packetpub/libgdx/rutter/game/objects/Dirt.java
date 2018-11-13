@@ -2,6 +2,7 @@ package com.packetpub.libgdx.rutter.game.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.packetpub.libgdx.rutter.game.Assets;
 
 
@@ -16,6 +17,7 @@ public class Dirt extends AbstractGameObject
 	private TextureRegion regMiddle;
 	
 	private int length;
+	public Rectangle bounds = new Rectangle();
 	
 	/**
 	 * Constructor for dirt object.
@@ -46,6 +48,7 @@ public class Dirt extends AbstractGameObject
 	public void setLength(int length)
 	{
 		this.length = length;
+		bounds.set(0, 0, dimension.x * length, dimension.y);
 	}
 	
 	/**
