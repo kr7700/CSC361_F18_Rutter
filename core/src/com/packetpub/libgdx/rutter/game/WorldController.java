@@ -13,6 +13,7 @@ import com.packetpub.libgdx.rutter.game.objects.Nori;
 import com.packetpub.libgdx.rutter.game.objects.RiceBall;
 import com.packetpub.libgdx.rutter.game.objects.RiceBall.JUMP_STATE;
 import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
+import com.packetpub.libgdx.rutter.game.objects.WaterOverlay;
 import com.packetpub.libgdx.rutter.util.B2Listener;
 import com.packetpub.libgdx.rutter.util.CameraHelper;
 import com.packetpub.libgdx.rutter.util.Constants;
@@ -51,8 +52,8 @@ public class WorldController extends InputAdapter implements Disposable
 	public CameraHelper cameraHelper;
 	
 	public Level level;
-	public int lives;
-	public int score;
+	public int lives = Constants.LIVES_START;
+	public int score = 0;
 	
 	public World b2world;
 	public B2Listener listener;
@@ -74,7 +75,6 @@ public class WorldController extends InputAdapter implements Disposable
 	{
 		Gdx.input.setInputProcessor(this);
 		cameraHelper = new CameraHelper();
-		lives = Constants.LIVES_START;
 		initLevel();
 	}
 	
@@ -83,7 +83,6 @@ public class WorldController extends InputAdapter implements Disposable
 	 */
 	public void initLevel()
 	{
-		score = 0;
 		level = new Level(Constants.LEVEL_01);
 		cameraHelper.setTarget(level.riceBall);
 		initPhysics();
@@ -132,8 +131,9 @@ public class WorldController extends InputAdapter implements Disposable
 			polygonShape.setAsBox(bug.dimension.x / 2.0f, bug.dimension.y / 2.0f, origin, 0);
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = polygonShape;
-			fixtureDef.density = 50;
-			fixtureDef.restitution = 0.5f;
+			fixtureDef.density = 10;
+			fixtureDef.restitution = 0.001f;
+			fixtureDef.friction = 0.9f;
 			body.createFixture(fixtureDef);
 			fixtureDef.isSensor = true;
 			body.setUserData(bug);
@@ -200,22 +200,40 @@ public class WorldController extends InputAdapter implements Disposable
 			polygonShape.dispose();
 		}
 		
+		// Water
+		WaterOverlay water = level.waterOverlay;
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = BodyType.StaticBody;
+		bodyDef.position.set(water.position);
+		Body body = b2world.createBody(bodyDef);
+		water.body = body;
+		PolygonShape polygonShape = new PolygonShape();
+		origin.x = water.dimension.x / 2.0f;
+		origin.y = water.dimension.y / 2.0f;
+		polygonShape.setAsBox(water.dimension.x / 2.0f, water.dimension.y / 2.0f, origin, 0);
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = polygonShape;
+		fixtureDef.isSensor = true;
+		body.createFixture(fixtureDef);
+		body.setUserData(water);
+		polygonShape.dispose();
+		
 		// RiceBall
 		RiceBall ball = level.riceBall;
-		BodyDef bodyDef = new BodyDef();
+		bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(ball.position);
-		Body body = b2world.createBody(bodyDef);
+		body = b2world.createBody(bodyDef);
 		ball.body = body;
-		PolygonShape polygonShape = new PolygonShape();
+		polygonShape = new PolygonShape();
 		origin.x = ball.dimension.x / 2.0f;
 		origin.y = ball.dimension.y / 2.0f;
 		polygonShape.setAsBox(ball.dimension.x /2.0f, ball.dimension.y / 2.0f, origin, 0);
-		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef = new FixtureDef();
 		fixtureDef.shape = polygonShape;
 		fixtureDef.density = 10;
-		fixtureDef.restitution = 0.1f;
-		fixtureDef.friction = 0.98f;
+		fixtureDef.restitution = 0.001f;
+		fixtureDef.friction = 0.999f;
 		body.createFixture(fixtureDef);
 		body.setUserData(ball);
 		polygonShape.dispose();
@@ -251,19 +269,27 @@ public class WorldController extends InputAdapter implements Disposable
 	{
 		if (cameraHelper.hasTarget())
 		{
-			// Player Movement
-			if (Gdx.input.isKeyPressed(Keys.LEFT))
+			if (level.riceBall.health > 0)
 			{
-				level.riceBall.body.applyForceToCenter(-300, 0, true);
+				// Player Movement
+				if (Gdx.input.isKeyPressed(Keys.LEFT))
+				{
+					level.riceBall.body.applyForceToCenter(-300, 0, true);
+				}
+				else if (Gdx.input.isKeyPressed(Keys.RIGHT))
+				{
+					level.riceBall.body.applyForceToCenter(300, 0, true);
+				}
+				if (Gdx.input.isKeyJustPressed(Keys.SPACE) && !level.riceBall.isJumping)
+				{
+					level.riceBall.isJumping = true;
+					level.riceBall.body.applyForceToCenter(0, 2000, true);
+				}
 			}
-			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
+			if (level.riceBall.health <= 0)
 			{
-				level.riceBall.body.applyForceToCenter(300, 0, true);
-			}
-			if (Gdx.input.isKeyJustPressed(Keys.SPACE) && !level.riceBall.isJumping)
-			{
-				level.riceBall.isJumping = true;
-				level.riceBall.body.applyForceToCenter(0, 2000, true);
+				lives--;
+				init();
 			}
 		}
 	}
