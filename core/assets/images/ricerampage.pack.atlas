@@ -46,9 +46,16 @@ item_gun
   orig: 100, 100
   offset: 0, 0
   index: -1
+item_happy
+  rotate: false
+  xy: 262, 486
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 item_nori
   rotate: false
-  xy: 520, 641
+  xy: 169, 283
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
@@ -62,7 +69,14 @@ item_rice_grain
   index: -1
 riceball
   rotate: false
-  xy: 262, 486
+  xy: 520, 616
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+riceballhappy
+  rotate: false
+  xy: 67, 156
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
