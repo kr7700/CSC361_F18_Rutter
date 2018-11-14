@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.packetpub.libgdx.rutter.game.Level;
 import com.packetpub.libgdx.rutter.game.WorldController;
+import com.packetpub.libgdx.rutter.game.objects.Bug;
 import com.packetpub.libgdx.rutter.game.objects.Gun;
 import com.packetpub.libgdx.rutter.game.objects.Nori;
 import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
@@ -90,6 +91,34 @@ public class B2Listener implements ContactListener
 					}
 				}
 			}
+			if (fixtureA.getBody().getUserData().equals(level.waterOverlay))
+			{
+				level.riceBall.changeHealth(-2);
+			}
+			if (fixtureA.getBody().getUserData().toString() == "bug")
+			{
+				for (Bug bug : level.bugs)
+				{
+					if (fixtureA.getBody().getUserData().equals(bug))
+					{
+						worldController.removeFlagged.add(fixtureA.getBody());
+						bug.killed = true;
+						worldController.score += bug.getScore();
+						level.riceBall.changeHealth(-1);
+					}
+				}
+			}
+		}
+		
+		if (fixtureA.getBody().getUserData().toString() == "bug")
+		{
+			Bug bug = (Bug) fixtureA.getBody().getUserData();
+			bug.grounded = true;
+		}
+		if (fixtureB.getBody().getUserData().toString() == "bug")
+		{
+			Bug bug = (Bug) fixtureB.getBody().getUserData();
+			bug.grounded = true;
 		}
 
 	}
