@@ -182,7 +182,7 @@ public class Assets implements Disposable, AssetErrorListener
 			{
 				System.out.println("ball isnt null");
 			}
-			riceballhappy = atlas.findRegion("item_nori");
+			riceballhappy = atlas.findRegion("riceballhappy");
 			if (riceballhappy == null)
 			{
 				System.out.println("happy is null");
