@@ -16,6 +16,9 @@ import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
 import com.packetpub.libgdx.rutter.util.B2Listener;
 import com.packetpub.libgdx.rutter.util.CameraHelper;
 import com.packetpub.libgdx.rutter.util.Constants;
+
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -53,6 +56,7 @@ public class WorldController extends InputAdapter implements Disposable
 	
 	public World b2world;
 	public B2Listener listener;
+	public ArrayList<Body> removeFlagged = new ArrayList<Body>();
 	
 	/**
 	 * Constructor for WorldController.
@@ -82,7 +86,6 @@ public class WorldController extends InputAdapter implements Disposable
 		score = 0;
 		level = new Level(Constants.LEVEL_01);
 		cameraHelper.setTarget(level.riceBall);
-		listener = new B2Listener(level);
 		initPhysics();
 	}
 	
@@ -132,6 +135,7 @@ public class WorldController extends InputAdapter implements Disposable
 			fixtureDef.density = 50;
 			fixtureDef.restitution = 0.5f;
 			body.createFixture(fixtureDef);
+			fixtureDef.isSensor = true;
 			body.setUserData(bug);
 			polygonShape.dispose();
 		}
@@ -150,6 +154,7 @@ public class WorldController extends InputAdapter implements Disposable
 			polygonShape.setAsBox(gun.dimension.x / 2.0f, gun.dimension.y / 2.0f, origin, 0);
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = polygonShape;
+			fixtureDef.isSensor = true;
 			body.createFixture(fixtureDef);
 			body.setUserData(gun);
 			polygonShape.dispose();
@@ -169,6 +174,7 @@ public class WorldController extends InputAdapter implements Disposable
 			polygonShape.setAsBox(nori.dimension.x / 2.0f, nori.dimension.y / 2.0f, origin, 0);
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = polygonShape;
+			fixtureDef.isSensor = true;
 			body.createFixture(fixtureDef);
 			body.setUserData(nori);
 			polygonShape.dispose();
@@ -188,6 +194,7 @@ public class WorldController extends InputAdapter implements Disposable
 			polygonShape.setAsBox(grain.dimension.x /2.0f, grain.dimension.y / 2.0f, origin, 0);
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = polygonShape;
+			fixtureDef.isSensor = true;
 			body.createFixture(fixtureDef);
 			body.setUserData(grain);
 			polygonShape.dispose();
@@ -213,6 +220,7 @@ public class WorldController extends InputAdapter implements Disposable
 		body.setUserData(ball);
 		polygonShape.dispose();
 		
+		listener = new B2Listener(level, this);
         b2world.setContactListener(listener);
 	}
 	
@@ -246,16 +254,16 @@ public class WorldController extends InputAdapter implements Disposable
 			// Player Movement
 			if (Gdx.input.isKeyPressed(Keys.LEFT))
 			{
-				level.riceBall.body.applyForceToCenter(-500, 0, true);
+				level.riceBall.body.applyForceToCenter(-300, 0, true);
 			}
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 			{
-				level.riceBall.body.applyForceToCenter(500, 0, true);
+				level.riceBall.body.applyForceToCenter(300, 0, true);
 			}
 			if (Gdx.input.isKeyJustPressed(Keys.SPACE) && !level.riceBall.isJumping)
 			{
 				level.riceBall.isJumping = true;
-				level.riceBall.body.applyForceToCenter(0, 3000, true);
+				level.riceBall.body.applyForceToCenter(0, 2000, true);
 			}
 		}
 	}
@@ -270,6 +278,11 @@ public class WorldController extends InputAdapter implements Disposable
 		handleInputGame(deltaTime);
 		level.update(deltaTime);
 		b2world.step(deltaTime, 8, 3);
+		while (!removeFlagged.isEmpty())
+		{
+			b2world.destroyBody(removeFlagged.get(0));
+			removeFlagged.remove(0);
+		}
 		cameraHelper.update(deltaTime);
 	}
 	
