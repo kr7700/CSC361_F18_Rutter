@@ -1,6 +1,7 @@
 package com.packetpub.libgdx.rutter.game.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.packetpub.libgdx.rutter.game.Assets;
@@ -26,12 +27,15 @@ public class RiceBall extends AbstractGameObject
 	}
 	
 	private TextureRegion regBall;
+	private TextureRegion regBallHappy;
 	
 	public VIEW_DIRECTION viewDirection;
 	public float timeJumping;
 	public JUMP_STATE jumpState;
 	public int bullets;
 	public int health;
+
+	public boolean isJumping = false;
 	
 	/**
 	 * Constructor for riceball, calls init()
@@ -48,6 +52,7 @@ public class RiceBall extends AbstractGameObject
 	{
 		dimension.set(1,1);
 		regBall = Assets.instance.riceball.riceball;
+		regBallHappy = Assets.instance.riceball.riceballhappy;
 		//Center image on game object
 		origin.set(dimension.x /2 , dimension.y /2);
 //		//Bounding box for collision detection
@@ -191,7 +196,28 @@ public class RiceBall extends AbstractGameObject
 		TextureRegion reg = null;
 		
 		//Draw image
-		reg = regBall;
+		if (health == 2)
+		{
+			reg = regBallHappy;
+		}
+		else
+		{
+			reg = regBall;
+		}
 		batch.draw(reg.getTexture(),position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x, scale.y, rotation,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), viewDirection == VIEW_DIRECTION.LEFT, false);
+		
+		if (bullets > 0)
+		{
+			reg = Assets.instance.gun.gun;
+			batch.draw(reg.getTexture(),position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x, scale.y, rotation,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), false, false);
+		}
+	}
+	
+	/**
+	 * Returns name of object
+	 */
+	public String toString()
+	{
+		return "riceball";
 	}
 }

@@ -167,6 +167,7 @@ public class Assets implements Disposable, AssetErrorListener
 	public class AssetRiceBall
 	{
 		public final AtlasRegion riceball;
+		public final AtlasRegion riceballhappy;
 
 		/**
 		 * Sets riceball to hold the reference to the correct region from atlas.
@@ -177,6 +178,15 @@ public class Assets implements Disposable, AssetErrorListener
 		public AssetRiceBall(TextureAtlas atlas)
 		{
 			riceball = atlas.findRegion("riceball");
+			if (riceball != null)
+			{
+				System.out.println("ball isnt null");
+			}
+			riceballhappy = atlas.findRegion("riceballhappy");
+			if (riceballhappy == null)
+			{
+				System.out.println("happy is null");
+			}
 		}
 	}
 	

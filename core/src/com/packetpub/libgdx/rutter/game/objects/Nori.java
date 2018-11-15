@@ -62,4 +62,12 @@ public class Nori extends AbstractGameObject
 	{
 		return 30;
 	}
+	
+	/**
+	 * Returns name of object
+	 */
+	public String toString()
+	{
+		return "nori";
+	}
 }

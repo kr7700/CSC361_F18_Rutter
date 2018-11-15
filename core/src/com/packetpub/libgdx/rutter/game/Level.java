@@ -147,7 +147,7 @@ public class Level
 				else if (BLOCK_TYPE.PLAYER_SPAWNPOINT.sameColor(currentPixel))
 				{
 					obj = new RiceBall();
-					offsetHeight = -2.5f;
+					offsetHeight = -1.5f;
 					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
 					riceBall = (RiceBall) obj;
 				}
@@ -156,7 +156,7 @@ public class Level
 				else if(BLOCK_TYPE.ITEM_BUG.sameColor(currentPixel))
 				{
 					obj = new Bug();
-					offsetHeight = -4.5f;
+					offsetHeight = -1.5f;
 					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
 					bugs.add((Bug) obj);
 				}
@@ -244,5 +244,24 @@ public class Level
 		
 		//Draw Water overlay
 		waterOverlay.render(batch);
+	}
+
+	/**
+	 * Calls update method of each object in the level.
+	 * @param deltaTime		How long since last frame.
+	 */
+	public void update(float deltaTime)
+	{
+		riceBall.update(deltaTime);
+		for (Dirt dirt : dirtPlatforms)
+			dirt.update(deltaTime);
+		for (Bug bug : bugs)
+			bug.update(deltaTime);
+		for (Gun gun : guns)
+			gun.update(deltaTime);
+		for (Nori individualNori : nori)
+			individualNori.update(deltaTime);
+		for (RiceGrain ricegrain : ricegrains)
+			ricegrain.update(deltaTime);
 	}
 }
