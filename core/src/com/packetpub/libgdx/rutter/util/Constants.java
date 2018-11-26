@@ -22,6 +22,15 @@ public class Constants
 	//Location of Description file for texture atlas
 	public static final String TEXTURE_ATLAS_OBJECTS = "images/ricerampage.pack.atlas";
 	
+	// Information for displaying ui elements
+	public static final String TEXTURE_ATLAS_UI = "images/ricerampage-ui.pack.atlas";
+	public static final String TEXTURE_ATLAS_LIBGDX_UI = "images/uiskin.atlas";
+	public static final String SKIN_LIBGDX_UI = "images/uiskin.json";
+	public static final String SKIN_RUTTER_UI = "images/ricerampage-ui.json";
+
+	public static final String PREFERENCES = "rutter.prefs";
+	
+	
 	//Location of image file for level 01
 	public static final String LEVEL_01 = "levels/level-01.png";
 	
