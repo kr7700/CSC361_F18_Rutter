@@ -85,13 +85,13 @@ public class Bug extends AbstractGameObject
 			{
 			frames++;
 			// switch off between moving left and right ever other second
-			if (frames < 100)
+			if (frames < 50)
 			{
 				body.applyForceToCenter(-100, 0, true);
 			}
 			else
 			{
-				if (frames > 200)
+				if (frames > 100)
 				{
 					frames = 0;
 				}

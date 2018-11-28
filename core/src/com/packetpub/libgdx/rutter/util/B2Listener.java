@@ -40,7 +40,7 @@ public class B2Listener implements ContactListener
 		Fixture fixtureA = contact.getFixtureA();
 		Fixture fixtureB = contact.getFixtureB();
 		System.out.println("Begin Contact: " + fixtureA.getBody().getUserData().toString() + " and " + fixtureB.getBody().getUserData().toString());
-		if (fixtureA.getBody().getUserData().toString() == "riceball" || fixtureB.getBody().getUserData().toString() == "riceball");
+		if (fixtureA.getBody().getUserData().toString() == "riceball" || fixtureB.getBody().getUserData().toString() == "riceball")
 		{
 			//swap fixtureA and B so that riceball is in B, other object is in A.
 			if (fixtureA.getBody().getUserData().toString() == "riceball")
