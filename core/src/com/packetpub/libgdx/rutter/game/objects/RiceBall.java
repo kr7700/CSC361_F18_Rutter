@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.packetpub.libgdx.rutter.game.Assets;
 import com.packetpub.libgdx.rutter.util.Constants;
 
@@ -54,7 +55,7 @@ public class RiceBall extends AbstractGameObject
 		regBall = Assets.instance.riceball.riceball;
 		regBallHappy = Assets.instance.riceball.riceballhappy;
 		//Center image on game object
-		origin.set(dimension.x /2 , dimension.y /2);
+		origin.set(dimension.x /2, dimension.y /2);
 //		//Bounding box for collision detection
 //		bounds.set(0,0,dimension.x, dimension.y);
 		//Set physics values
@@ -142,6 +143,7 @@ public class RiceBall extends AbstractGameObject
 		}
 		else
 			health += changed;
+		System.out.println("health is now " + health);
 	}
 	
 //	/**
@@ -186,9 +188,9 @@ public class RiceBall extends AbstractGameObject
 //		if (jumpState != JUMP_STATE.GROUNDED)
 //		super.updateMotionY(deltaTime);
 //	}
-
+	
 	/**
-	 * Renders the object in the world using the sprite batch
+	 * Renders the riceball in the world using the sprite batch
 	 */
 	@Override
 	public void render(SpriteBatch batch)
