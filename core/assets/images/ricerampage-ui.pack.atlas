@@ -1,0 +1,83 @@
+
+ricerampage-ui.pack.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+background
+  rotate: false
+  xy: 2, 375
+  size: 800, 500
+  orig: 800, 500
+  offset: 0, 0
+  index: -1
+bunny
+  rotate: false
+  xy: 368, 251
+  size: 365, 122
+  orig: 365, 122
+  offset: 0, 0
+  index: -1
+coins
+  rotate: false
+  xy: 2, 2
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+highscores-dn
+  rotate: false
+  xy: 804, 725
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+highscores-up
+  rotate: false
+  xy: 368, 99
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+info
+  rotate: false
+  xy: 2, 5
+  size: 330, 85
+  orig: 330, 85
+  offset: 0, 0
+  index: -1
+logo
+  rotate: false
+  xy: 2, 92
+  size: 364, 281
+  orig: 364, 281
+  offset: 0, 0
+  index: -1
+options-dn
+  rotate: false
+  xy: 804, 573
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+options-up
+  rotate: false
+  xy: 520, 99
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+play-dn
+  rotate: false
+  xy: 804, 421
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+play-up
+  rotate: false
+  xy: 672, 99
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1

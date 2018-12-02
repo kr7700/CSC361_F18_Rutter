@@ -15,7 +15,7 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 public class DesktopLauncher
 {
 	private static boolean rebuildAtlas = false;
-	private static boolean drawDebugOutline = true;
+	private static boolean drawDebugOutline = false;
 
 	/**
 	 * Main class to run the game
@@ -30,7 +30,7 @@ public class DesktopLauncher
 			settings.duplicatePadding = false;
 			settings.debug = drawDebugOutline;
 			TexturePacker.process(settings, "assets-raw/images", "../core/assets/images", "ricerampage.pack");
-			//TexturePacker.process(settings, "assets-raw/images-ui", "../core/assets/images", "ricerampage-ui.pack");
+			TexturePacker.process(settings, "assets-raw/images-ui", "../core/assets/images", "ricerampage-ui.pack");
 		}
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		new LwjglApplication(new CSC361_F18_Rutter(), config);
