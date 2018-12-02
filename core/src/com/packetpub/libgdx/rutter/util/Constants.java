@@ -29,6 +29,7 @@ public class Constants
 	public static final String SKIN_RUTTER_UI = "images/ricerampage-ui.json";
 
 	public static final String PREFERENCES = "rutter.prefs";
+	public static final String SCORES = "../core/assets/scores.txt";
 	
 	
 	//Location of image file for level 01

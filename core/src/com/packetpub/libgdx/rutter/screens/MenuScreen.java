@@ -26,6 +26,13 @@ import com.packetpub.libgdx.rutter.game.Assets;
 import com.packetpub.libgdx.rutter.util.Constants;
 import com.packetpub.libgdx.rutter.util.GamePreferences;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -54,6 +61,7 @@ public class MenuScreen extends AbstractGameScreen
 	private Image imgBall;
 	private Button btnMenuPlay;
 	private Button btnMenuOptions;
+	private Button btnMenuScore;
 
 	// options
 	private Window winOptions;
@@ -69,6 +77,12 @@ public class MenuScreen extends AbstractGameScreen
 	private final float DEBUG_REBUILD_INTERVAL = 5.0f;
 	private boolean debugEnabled = false;
 	private float debugRebuildStage;
+	
+	// high score
+	private Window winScore;
+	private TextButton btnWinScoreExit;
+	private String[] scoreNames = new String[10];
+	private int[] scoreNums = new int[10];
 
 	/**
 	 * Constructor for the screen that holds the main menu of the game.
@@ -92,12 +106,15 @@ public class MenuScreen extends AbstractGameScreen
 		skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX_UI),
 				new TextureAtlas(Constants.TEXTURE_ATLAS_LIBGDX_UI));
 
+		getScores();
+		
 		// build all layers
 		Table layerBackground = buildBackgroundLayer();
 		Table layerObjects = buildObjectsLayer();
 		Table layerLogos = buildLogosLayer();
 		Table layerControls = buildControlsLayer();
 		Table layerOptionsWindow = buildOptionsWindowLayer();
+		Table layerScoreWindow = buildScoreWindowLayer();
 
 		// assemble stage for menu screen
 		stage.clear();
@@ -109,6 +126,7 @@ public class MenuScreen extends AbstractGameScreen
 		stack.add(layerLogos);
 		stack.add(layerControls);
 		stage.addActor(layerOptionsWindow);
+		stage.addActor(layerScoreWindow);
 	}
 
 	/**
@@ -202,9 +220,23 @@ public class MenuScreen extends AbstractGameScreen
 				onOptionsClicked();
 			}
 		});
+
+		layer.row();
+		// + High Score Button
+		btnMenuScore = new Button(skinRutter, "highscores");
+		layer.add(btnMenuScore);
+		btnMenuScore.addListener(new ChangeListener()
+		{
+			@Override
+			public void changed(ChangeEvent event, Actor actor)
+			{
+				onHighScoreClicked();
+			}
+		});
+		
 		if (debugEnabled)
 			layer.debug();
-
+		
 		return layer;
 	}
 
@@ -347,7 +379,140 @@ public class MenuScreen extends AbstractGameScreen
 
 		return tbl;
 	}
+	
+	/**
+	 * Builds the high score window for the menu screen.
+	 * 
+	 * @return The score window.
+	 */
+	private Table buildScoreWindowLayer()
+	{
+		winScore = new Window("High Scores", skinLibgdx);
+		winScore.add(buildScoreWinRows()).row();
 
+		// + Separator and Exit button
+		winScore.add(buildScoreWinButton());
+
+		// Make score window slightly transparent
+		winScore.setColor(1, 1, 1, 0.8f);
+		// Hide score window by default
+		showHighScoreWindow(false,false);
+		if (debugEnabled)
+			winScore.debug();
+		// Let TableLayout recalculate widget sizes and positions
+		winScore.pack();
+		// Move options window to bottom right corner
+		winScore.setPosition(Constants.VIEWPORT_GUI_WIDTH - winOptions.getWidth() - 50, 50);
+		return winScore;
+	}
+	
+	/**
+	 * Gets the scores from the high score file.
+	 */
+	private void getScores()
+	{
+		File file = new File(Constants.SCORES);
+		BufferedReader br = null;
+		try
+		{
+			br = new BufferedReader(new FileReader(file));
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		
+		String line;
+		int i = 0;
+		try
+		{
+			while((line = br.readLine()) != null)
+			{
+				scoreNames[i] = line;
+				line = br.readLine();
+				scoreNums[i] = Integer.parseInt(line);
+				i++;
+			}
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Builds the table that contains the high scores.
+	 * 
+	 * @return	The high score table.
+	 */
+	private Table buildScoreWinRows()
+	{
+		Table tbl = new Table();
+		for (int i = 0; i < 10; i++)
+		{
+			Label lbl = null;
+			lbl = new Label(i+1 + ".      ", skinLibgdx);
+			tbl.add(lbl);
+			
+		    String score = ""+scoreNums[i];
+			lbl = new Label(score, skinLibgdx);
+			tbl.add(lbl);
+		    for (int j = 0; j < 10; j++)
+		    {
+		    	lbl = new Label(" ", skinLibgdx);
+		    	tbl.add(lbl);
+		    }
+			
+			lbl = new Label(scoreNames[i], skinLibgdx);
+			tbl.add(lbl);
+		    for (int j = 0; j < 10; j++)
+		    {
+		    	lbl = new Label(" ", skinLibgdx);
+		    	tbl.add(lbl);
+		    }
+		    
+			tbl.row();
+		}
+		return tbl;
+	}
+
+	/**
+	 * Builds a table that contains the exit button in the high score window.
+	 * 
+	 * @return exit button table.
+	 */
+	private Table buildScoreWinButton()
+	{
+		Table tbl = new Table();
+		// + Separator
+		Label lbl = null;
+		lbl = new Label("", skinLibgdx);
+		lbl.setColor(0.75f, 0.75f, 0.75f, 1);
+		lbl.setStyle(new LabelStyle(lbl.getStyle()));
+		lbl.getStyle().background = skinLibgdx.newDrawable("white");
+		tbl.add(lbl).colspan(2).height(1).width(220).pad(0, 0, 0, 1);
+		tbl.row();
+		lbl = new Label("", skinLibgdx);
+		lbl.setColor(0.5f, 0.5f, 0.5f, 1);
+		lbl.setStyle(new LabelStyle(lbl.getStyle()));
+		lbl.getStyle().background = skinLibgdx.newDrawable("white");
+		tbl.add(lbl).colspan(2).height(1).width(220).pad(0, 1, 5, 0);
+		tbl.row();
+
+		// + exit Button with event handler
+		btnWinScoreExit = new TextButton("Exit", skinLibgdx);
+		tbl.add(btnWinScoreExit);
+		btnWinScoreExit.addListener(new ChangeListener()
+		{
+			@Override
+			public void changed(ChangeEvent event, Actor actor)
+			{
+				onExitClicked();
+			}
+		});
+		return tbl;
+	}
+	
 	/**
 	 * Loads the previously set settings to the options menu.
 	 */
@@ -372,6 +537,20 @@ public class MenuScreen extends AbstractGameScreen
 		showOptionsWindow(true,true);
 		btnMenuPlay.setVisible(false);
 		btnMenuOptions.setVisible(false);
+		btnMenuScore.setVisible(false);
+		winOptions.setVisible(true);
+	}
+	
+	/**
+	 * Loads the high score menu, hides other buttons.
+	 */
+	private void onHighScoreClicked()
+	{
+		showMenuButtons(false);
+		showHighScoreWindow(true,true);
+		btnMenuPlay.setVisible(false);
+		btnMenuOptions.setVisible(false);
+		btnMenuScore.setVisible(false);
 		winOptions.setVisible(true);
 	}
 
@@ -394,9 +573,25 @@ public class MenuScreen extends AbstractGameScreen
 		showOptionsWindow(false,true);
 		btnMenuPlay.setVisible(true);
 		btnMenuOptions.setVisible(true);
+		btnMenuScore.setVisible(true);
 		winOptions.setVisible(false);
 		//AudioManager.instance.onSettingsUpdated();
 	}
+	
+	/**
+	 * Closes the score window, returns to the main menu.
+	 */
+	private void onExitClicked()
+	{
+		showMenuButtons(true);
+		showHighScoreWindow(false,true);
+		btnMenuPlay.setVisible(true);
+		btnMenuOptions.setVisible(true);
+		btnMenuScore.setVisible(true);
+		winOptions.setVisible(false);
+		//AudioManager.instance.onSettingsUpdated();
+	}
+
 
 	/**
 	 * Save changes made to settings in the options menu.
@@ -491,12 +686,15 @@ public class MenuScreen extends AbstractGameScreen
 		float moveDuration = 1.0f;
 		Interpolation moveEasing = Interpolation.swing;
 		float delayOptionsButton = 0.25f;
+		float delayScoreButton = 0.5f;
+
 		
 		float moveX = 300 * (visible ? -1 : 1);
 		float moveY = 0 * (visible ? -1 : 1);
 		final Touchable touchEnabled = visible ? Touchable.enabled : Touchable.disabled;
 		btnMenuPlay.addAction(moveBy(moveX,moveY,moveDuration,moveEasing));
 		btnMenuOptions.addAction(sequence(delay(delayOptionsButton),moveBy(moveX, moveY, moveDuration, moveEasing)));
+		btnMenuScore.addAction(sequence(delay(delayScoreButton),moveBy(moveX, moveY, moveDuration, moveEasing)));
 		SequenceAction seq = sequence();
 		if(visible)
 		seq.addAction(delay(delayOptionsButton + moveDuration));
@@ -505,15 +703,15 @@ public class MenuScreen extends AbstractGameScreen
 			public void run() 
 			{ 
 				btnMenuPlay.setTouchable(touchEnabled);
-				btnMenuPlay.setTouchable(touchEnabled);
 				btnMenuOptions.setTouchable(touchEnabled);
+				btnMenuScore.setTouchable(touchEnabled);
 			}
 		}));
 		stage.addAction(seq);
 	}
 	
 	/**
-	 * Animates buttons in Options windows
+	 * Makes the options window fade in.
 	 */
 	private void showOptionsWindow (boolean visible,boolean animated) 
 	{
@@ -521,5 +719,16 @@ public class MenuScreen extends AbstractGameScreen
 		float duration = animated ? 1.0f : 0.0f;
 		Touchable touchEnabled = visible ? Touchable.enabled : Touchable.disabled;
 		winOptions.addAction(sequence(touchable(touchEnabled),alpha(alphaTo,duration)));
+	}
+	
+	/**
+	 * Makes the high score menu fade in.
+	 */
+	private void showHighScoreWindow (boolean visible,boolean animated) 
+	{
+		float alphaTo = visible ? 0.8f : 0.0f;
+		float duration = animated ? 1.0f : 0.0f;
+		Touchable touchEnabled = visible ? Touchable.enabled : Touchable.disabled;
+		winScore.addAction(sequence(touchable(touchEnabled),alpha(alphaTo,duration)));
 	}
 }
