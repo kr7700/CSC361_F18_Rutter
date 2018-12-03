@@ -2,6 +2,7 @@ package com.packetpub.libgdx.rutter.game.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.packetpub.libgdx.rutter.game.Assets;
 
 /**
@@ -13,6 +14,7 @@ public class Bullet extends AbstractGameObject
 {
 	private TextureRegion regBullet;
 
+	public boolean reversed = false;
 	public boolean onScreen;
 
 	/**
@@ -29,14 +31,30 @@ public class Bullet extends AbstractGameObject
 	 */
 	private void init()
 	{
-		dimension.set(0.25f, 0.14f);
+		dimension.set(0.5f, 0.3f);
 		regBullet = Assets.instance.bullet.bullet;
 		
 		// Set bounding box for collision detection
 		//bounds.set(0, 0, dimension.x, dimension.y);
 		onScreen = false;
+		body = null;
 	}
 
+	
+	/**
+	 * Updates the object based on the time since last frame
+	 * @param deltaTime		Time since last frame
+	 */
+	@Override
+	public void update (float deltaTime)
+	{
+		if (body != null)
+		{
+			position.set(body.getPosition());
+			rotation = body.getAngle() * MathUtils.radiansToDegrees;
+		}
+	}
+	
 	/**
 	 * Renders the bullet (if it's been fired, and hasn't hit anything)
 	 * 
@@ -52,7 +70,7 @@ public class Bullet extends AbstractGameObject
 		reg = regBullet;
 		batch.draw(reg.getTexture(), position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x,
 				scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(),
-				false, false);
+				reversed, false);
 	}
 	
 	/**

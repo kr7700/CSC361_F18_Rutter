@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.packetpub.libgdx.rutter.game.objects.Bug;
+import com.packetpub.libgdx.rutter.game.objects.Bullet;
 import com.packetpub.libgdx.rutter.game.objects.Dirt;
 import com.packetpub.libgdx.rutter.game.objects.Gun;
 import com.packetpub.libgdx.rutter.game.objects.Nori;
@@ -291,11 +292,65 @@ public class WorldController extends InputAdapter implements Disposable
 					level.riceBall.isJumping = true;
 					level.riceBall.body.applyForceToCenter(0, 200, true);
 				}
+				if (Gdx.input.isKeyJustPressed(Keys.CONTROL_LEFT) && level.riceBall.bullets > 0)
+				{
+					level.riceBall.bullets--;
+					fireBullet();
+				}
 			}
 			if (level.riceBall.health <= 0)
 			{
 				lives--;
 				init();
+			}
+		}
+	}
+	
+	/**
+	 * Get a bullet and place it into the world.
+	 */
+	public void fireBullet()
+	{
+		boolean bulletNotFired = true;
+		for (int i = 0; i < level.bullets.size & bulletNotFired; i++)
+		{
+			Bullet bullet = level.bullets.get(i);
+			if (!bullet.onScreen)
+			{
+				bulletNotFired = false;
+				if (level.riceBall.viewDirection.equals(RiceBall.VIEW_DIRECTION.RIGHT))
+					bullet.position.x = level.riceBall.position.x + 1.7f;
+				else if (level.riceBall.viewDirection.equals(RiceBall.VIEW_DIRECTION.LEFT))
+				{
+					bullet.position.x = level.riceBall.position.x - .7f;
+					bullet.reversed = true;
+				}
+				
+				bullet.position.y = level.riceBall.position.y + .3f;
+				bullet.onScreen = true;
+				
+				BodyDef bodyDef = new BodyDef();
+				bodyDef.type = BodyType.DynamicBody;
+				bodyDef.position.set(bullet.position);
+				Body body = b2world.createBody(bodyDef);
+				bullet.body = body;
+				
+				if (level.riceBall.viewDirection.equals(RiceBall.VIEW_DIRECTION.RIGHT))
+					body.setLinearVelocity(20, 0);
+				if (level.riceBall.viewDirection.equals(RiceBall.VIEW_DIRECTION.LEFT))
+					body.setLinearVelocity(-20, 0);
+				
+				PolygonShape polygonShape = new PolygonShape();
+				Vector2 origin = new Vector2(bullet.origin.x, bullet.origin.y);
+				polygonShape.setAsBox(bullet.dimension.x /2.0f, bullet.dimension.y / 2.0f, origin, 0);
+				FixtureDef fixtureDef = new FixtureDef();
+				fixtureDef.shape = polygonShape;
+				fixtureDef.density = 1;
+				fixtureDef.restitution = 0;
+				fixtureDef.friction = 1;
+				body.createFixture(fixtureDef);
+				body.setUserData(bullet);
+				polygonShape.dispose();
 			}
 		}
 	}
