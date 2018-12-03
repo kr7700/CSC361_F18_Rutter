@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.packetpub.libgdx.rutter.game.objects.AbstractGameObject;
 import com.packetpub.libgdx.rutter.game.objects.Background;
 import com.packetpub.libgdx.rutter.game.objects.Bug;
+import com.packetpub.libgdx.rutter.game.objects.Bullet;
 import com.packetpub.libgdx.rutter.game.objects.Dirt;
 import com.packetpub.libgdx.rutter.game.objects.Gun;
 import com.packetpub.libgdx.rutter.game.objects.Nori;
@@ -75,6 +76,7 @@ public class Level
 	public Array<Gun> guns;
 	public Array<Nori> nori;
 	public Array<RiceGrain> ricegrains;
+	public Array<Bullet> bullets;
 	
 	//decoration
 	public Background background;
@@ -102,6 +104,9 @@ public class Level
 		guns = new Array<Gun>();
 		nori = new Array<Nori>();
 		ricegrains = new Array<RiceGrain>();
+		bullets = new Array<Bullet>();
+		for (int i = 0; i < 3; i++)
+			bullets.add(new Bullet());
 		
 		//load image file that represents the level data
 		Pixmap pixmap = new Pixmap(Gdx.files.internal(filename));
@@ -239,6 +244,10 @@ public class Level
 		for (RiceGrain ricegrain : ricegrains)
 			ricegrain.render(batch);
 		
+		//draw bullets
+		for (Bullet bullet : bullets)
+			bullet.render(batch);
+		
 		//Draw Player Character
 		riceBall.render(batch);
 		
@@ -263,5 +272,7 @@ public class Level
 			individualNori.update(deltaTime);
 		for (RiceGrain ricegrain : ricegrains)
 			ricegrain.update(deltaTime);
+		for (Bullet bullet: bullets)
+			bullet.update(deltaTime);
 	}
 }

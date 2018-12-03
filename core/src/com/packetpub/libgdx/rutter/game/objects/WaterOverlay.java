@@ -49,4 +49,12 @@ public class WaterOverlay extends AbstractGameObject
 				dimension.y, scale.x, scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(),
 				reg.getRegionHeight(), false, false);
 	}
+	
+	/**
+	 * Returns name of object
+	 */
+	public String toString()
+	{
+		return "water";
+	}
 }
