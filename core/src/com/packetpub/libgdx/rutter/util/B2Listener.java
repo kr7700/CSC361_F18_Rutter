@@ -94,7 +94,12 @@ public class B2Listener implements ContactListener
 			}
 			if (fixtureA.getBody().getUserData().equals(level.waterOverlay))
 			{
-				level.riceBall.changeHealth(-2);
+				worldController.inWater = true;
+			}
+			if (fixtureA.getBody().getUserData().equals(level.goal))
+			{
+				worldController.goalReached = true;
+				worldController.timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
 			}
 			if (fixtureA.getBody().getUserData().toString() == "bug")
 			{

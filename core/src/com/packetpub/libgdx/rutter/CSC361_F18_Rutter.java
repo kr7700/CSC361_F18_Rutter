@@ -29,6 +29,6 @@ public class CSC361_F18_Rutter extends Game
 		GamePreferences.instance.load();
 		//AudioManager.instance.play(Assets.instance.music.song01);
 		// Start game at menu screen
-		setScreen(new MenuScreen(this));
+		setScreen(new MenuScreen(this, false, 0));
 	}
 }

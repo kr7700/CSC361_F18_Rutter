@@ -200,7 +200,7 @@ public class Level
 				else if(BLOCK_TYPE.GOAL.sameColor(currentPixel))
 				{
 					obj = new Goal();
-					offsetHeight = -5f;
+					offsetHeight = -6f;
 					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
 					goal = (Goal)obj;
 				}
