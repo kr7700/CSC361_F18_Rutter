@@ -33,6 +33,7 @@ public class Assets implements Disposable, AssetErrorListener
 	public AssetRiceGrain ricegrain;
 	public AssetNori nori;
 	public AssetGun gun;
+	public AssetBullet bullet;
 	public AssetLevelDecoration levelDecoration;
 
 	// singleton: prevent instantiation from other classes
@@ -289,6 +290,26 @@ public class Assets implements Disposable, AssetErrorListener
 		public AssetGun(TextureAtlas atlas)
 		{
 			gun = atlas.findRegion("item_gun");
+		}
+	}
+	
+	/**
+	 * @author Kevin Rutter
+	 * This class holds info for the bullet texture
+	 */
+	public class AssetBullet
+	{
+		public final AtlasRegion bullet;
+
+		/**
+		 * Sets gun to hold the reference to the correct region from the atlas
+		 * 
+		 * @param atlas
+		 *            Texture atlas
+		 */
+		public AssetBullet(TextureAtlas atlas)
+		{
+			bullet = atlas.findRegion("bullet");
 		}
 	}
 }

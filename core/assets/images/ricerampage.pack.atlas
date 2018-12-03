@@ -6,77 +6,105 @@ filter: Nearest,Nearest
 repeat: none
 bug
   rotate: false
-  xy: 327, 158
+  xy: 260, 7
   size: 100, 200
   orig: 100, 200
   offset: 0, 0
   index: -1
+bullet
+  rotate: false
+  xy: 929, 459
+  size: 93, 50
+  orig: 93, 50
+  offset: 0, 0
+  index: -1
 dirt_edge
   rotate: false
-  xy: 262, 132
+  xy: 864, 153
   size: 63, 356
   orig: 63, 356
   offset: 0, 0
   index: -1
 dirt_middle
   rotate: false
-  xy: 2, 132
+  xy: 604, 153
   size: 258, 356
   orig: 258, 356
   offset: 0, 0
   index: -1
 fence
   rotate: false
-  xy: 2, 2
+  xy: 2, 79
   size: 256, 128
   orig: 256, 128
   offset: 0, 0
   index: -1
 grass
   rotate: false
-  xy: 327, 360
-  size: 256, 128
-  orig: 256, 128
+  xy: 2, 209
+  size: 600, 300
+  orig: 600, 300
   offset: 0, 0
   index: -1
 item_gun
   rotate: false
-  xy: 585, 388
+  xy: 362, 107
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+item_gun_old
+  rotate: false
+  xy: 464, 107
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 item_nori
   rotate: false
-  xy: 429, 181
+  xy: 2, 2
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+item_nori_old
+  rotate: false
+  xy: 929, 382
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 item_rice_grain
   rotate: false
-  xy: 260, 80
+  xy: 702, 101
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 riceball
   rotate: false
-  xy: 429, 258
+  xy: 362, 5
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 riceballhappy
   rotate: false
-  xy: 687, 388
+  xy: 464, 5
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+riceballhappy_old
+  rotate: false
+  xy: 600, 51
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 water_overlay
   rotate: false
-  xy: 531, 198
+  xy: 566, 47
   size: 32, 160
   orig: 32, 160
   offset: 0, 0
