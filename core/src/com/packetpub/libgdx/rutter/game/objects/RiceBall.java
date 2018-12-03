@@ -55,7 +55,7 @@ public class RiceBall extends AbstractGameObject
 		regBall = Assets.instance.riceball.riceball;
 		regBallHappy = Assets.instance.riceball.riceballhappy;
 		//Center image on game object
-		origin.set(dimension.x /2, dimension.y /2);
+		origin.set(dimension.x/2, dimension.y/2);
 //		//Bounding box for collision detection
 //		bounds.set(0,0,dimension.x, dimension.y);
 		//Set physics values
@@ -211,7 +211,10 @@ public class RiceBall extends AbstractGameObject
 		if (bullets > 0)
 		{
 			reg = Assets.instance.gun.gun;
-			batch.draw(reg.getTexture(),position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x, scale.y, rotation,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), false, false);
+			if (viewDirection == VIEW_DIRECTION.RIGHT)
+				batch.draw(reg.getTexture(),position.x+.75f, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x/2, scale.y/2, 0,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), false, false);
+			else if (viewDirection == VIEW_DIRECTION.LEFT)
+				batch.draw(reg.getTexture(),position.x-.75f, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x/2, scale.y/2, 0,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), true, false);
 		}
 	}
 	

@@ -123,6 +123,24 @@ public class WorldRenderer implements Disposable
 	}
 	
 	/**
+	 * Responsible for rendering bullets
+	 * @param batch Spritebatch object
+	 */
+	private void renderGuiBullets(SpriteBatch batch)
+	{
+		float x = cameraGUI.viewportWidth - 50 - 3 * 50;
+		float y = 35;
+		for(int i = 0; i < 3; i++)
+		{
+			if(worldController.level.riceBall.bullets <= i)
+				batch.setColor(0.5f, 0.5f, 0.5f, 0.5f);
+			
+			batch.draw(Assets.instance.bullet.bullet, x + i * 50, y, 50, 50, 120, 100, 0.35f, -0.35f, 0);
+			batch.setColor(1, 1, 1, 1);
+		}
+	}
+	
+	/**
 	 * responsible for rendering fps counter
 	 * @param batch		The spritebatch we are using to draw.
 	 */
@@ -164,6 +182,8 @@ public class WorldRenderer implements Disposable
 		renderGuiScore(batch);
 		//draw extra lives icon + text (anchored to top right edge)
 		renderGuiExtraLive(batch);
+		//draw amount of bullets left
+		renderGuiBullets(batch);
 		//draw FPS text (anchored to bottom right edge)
 		renderGuiFpsCounter(batch);
 		batch.end();

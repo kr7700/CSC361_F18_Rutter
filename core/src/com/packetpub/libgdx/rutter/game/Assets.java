@@ -112,6 +112,7 @@ public class Assets implements Disposable, AssetErrorListener
 		ricegrain = new AssetRiceGrain(atlas);
 		nori = new AssetNori(atlas);
 		gun = new AssetGun(atlas);
+		bullet = new AssetBullet(atlas);
 		levelDecoration = new AssetLevelDecoration(atlas);
 	}
 
