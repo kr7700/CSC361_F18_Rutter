@@ -9,6 +9,7 @@ import com.packetpub.libgdx.rutter.game.objects.Background;
 import com.packetpub.libgdx.rutter.game.objects.Bug;
 import com.packetpub.libgdx.rutter.game.objects.Bullet;
 import com.packetpub.libgdx.rutter.game.objects.Dirt;
+import com.packetpub.libgdx.rutter.game.objects.Goal;
 import com.packetpub.libgdx.rutter.game.objects.Gun;
 import com.packetpub.libgdx.rutter.game.objects.Nori;
 import com.packetpub.libgdx.rutter.game.objects.RiceBall;
@@ -36,7 +37,8 @@ public class Level
 		ITEM_BUG(255, 0, 0), //red
 		ITEM_GUN(255, 128, 0), //orange
 		ITEM_NORI(255, 0, 255), //purple
-		ITEM_RICE_GRAIN(255, 255, 0); //yellow
+		ITEM_RICE_GRAIN(255, 255, 0), //yellow
+		GOAL(0, 0, 255); //blue
 		
 		private int color;
 		
@@ -77,6 +79,7 @@ public class Level
 	public Array<Nori> nori;
 	public Array<RiceGrain> ricegrains;
 	public Array<Bullet> bullets;
+	public Goal goal;
 	
 	//decoration
 	public Background background;
@@ -193,6 +196,15 @@ public class Level
 					ricegrains.add((RiceGrain) obj);
 				}
 				
+				//rice grain
+				else if(BLOCK_TYPE.GOAL.sameColor(currentPixel))
+				{
+					obj = new Goal();
+					offsetHeight = -5f;
+					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
+					goal = (Goal)obj;
+				}
+				
 				//unknown object/pixel color
 				else 
 				{
@@ -253,6 +265,9 @@ public class Level
 		
 		//Draw Water overlay
 		waterOverlay.render(batch);
+		
+		//draw goal
+		goal.render(batch);
 	}
 
 	/**
@@ -274,5 +289,6 @@ public class Level
 			ricegrain.update(deltaTime);
 		for (Bullet bullet: bullets)
 			bullet.update(deltaTime);
+		goal.update(deltaTime);
 	}
 }
