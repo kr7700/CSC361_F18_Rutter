@@ -37,4 +37,7 @@ public class Constants
 	
 	//Amount of extra lives at level start
 	public static final int LIVES_START = 3;
+	
+	// Delay after game over
+	public static final float TIME_DELAY_GAME_OVER = 3;
 }

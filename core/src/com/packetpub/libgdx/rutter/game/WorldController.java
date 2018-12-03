@@ -5,23 +5,34 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.packetpub.libgdx.rutter.game.objects.Bug;
 import com.packetpub.libgdx.rutter.game.objects.Bullet;
 import com.packetpub.libgdx.rutter.game.objects.Dirt;
+import com.packetpub.libgdx.rutter.game.objects.Goal;
 import com.packetpub.libgdx.rutter.game.objects.Gun;
 import com.packetpub.libgdx.rutter.game.objects.Nori;
 import com.packetpub.libgdx.rutter.game.objects.RiceBall;
 import com.packetpub.libgdx.rutter.game.objects.RiceBall.JUMP_STATE;
 import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
 import com.packetpub.libgdx.rutter.game.objects.WaterOverlay;
+import com.packetpub.libgdx.rutter.screens.MenuScreen;
 import com.packetpub.libgdx.rutter.util.B2Listener;
 import com.packetpub.libgdx.rutter.util.CameraHelper;
 import com.packetpub.libgdx.rutter.util.Constants;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
@@ -38,6 +49,17 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 
 /**
  * @author Kevin Rutter
@@ -54,8 +76,15 @@ public class WorldController extends InputAdapter implements Disposable
 	public CameraHelper cameraHelper;
 	
 	public Level level;
+	public Game game;
 	public int lives = Constants.LIVES_START;
 	public int score = 0;
+	public boolean goalReached;
+	public boolean inWater = false;
+	public boolean gameEnded = false;
+	public float timeLeftGameOverDelay;
+	private TextField txt;
+	private Stage stage;
 	
 	public World b2world;
 	public B2Listener listener;
@@ -63,10 +92,12 @@ public class WorldController extends InputAdapter implements Disposable
 	
 	/**
 	 * Constructor for WorldController.
+	 * @param game The game application listener.
 	 */
-	public WorldController()
+	public WorldController(Game game)
 	{
 		init();
+		this.game = game;
 	}
 	
 	/**
@@ -85,6 +116,10 @@ public class WorldController extends InputAdapter implements Disposable
 	 */
 	public void initLevel()
 	{
+		score = 0;
+		goalReached = false;
+		inWater = false;
+		timeLeftGameOverDelay = 0;
 		level = new Level(Constants.LEVEL_01);
 		cameraHelper.setTarget(level.riceBall);
 		initPhysics();
@@ -243,6 +278,24 @@ public class WorldController extends InputAdapter implements Disposable
 		body.setUserData(ball);
 		polygonShape.dispose();
 		
+		//Goal
+		Goal goal = level.goal;
+		bodyDef = new BodyDef();
+		bodyDef.type = BodyType.StaticBody;
+		bodyDef.position.set(goal.position);
+		body = b2world.createBody(bodyDef);
+		goal.body = body;
+		polygonShape = new PolygonShape();
+		origin.x = goal.dimension.x / 2.0f;
+		origin.y = goal.dimension.y / 2.0f;
+		polygonShape.setAsBox(goal.dimension.x / 2.0f, goal.dimension.y / 2.0f, origin, 0);
+		fixtureDef = new FixtureDef();
+		fixtureDef.shape = polygonShape;
+		fixtureDef.isSensor = true;
+		body.createFixture(fixtureDef);
+		body.setUserData(goal);
+		polygonShape.dispose();
+		
 		listener = new B2Listener(level, this);
         b2world.setContactListener(listener);
 	}
@@ -301,7 +354,7 @@ public class WorldController extends InputAdapter implements Disposable
 			if (level.riceBall.health <= 0)
 			{
 				lives--;
-				init();
+				initLevel();
 			}
 		}
 	}
@@ -361,16 +414,39 @@ public class WorldController extends InputAdapter implements Disposable
 	 */
 	public void update(float deltaTime)
 	{
-		//handleDebugInput(deltaTime);
-		handleInputGame(deltaTime);
-		level.update(deltaTime);
-		b2world.step(deltaTime, 8, 3);
-		while (!removeFlagged.isEmpty())
+		if (!gameEnded)
 		{
-			b2world.destroyBody(removeFlagged.get(0));
-			removeFlagged.remove(0);
+			if (lives == 0 || goalReached)
+			{
+				timeLeftGameOverDelay -= deltaTime;
+				if (timeLeftGameOverDelay < 0)
+				{
+					gameEnded = true;
+					gameOver();
+				}
+			}
+			else
+			{
+				handleInputGame(deltaTime);
+			}
+			level.update(deltaTime);
+			b2world.step(deltaTime, 8, 3);
+			while (!removeFlagged.isEmpty())
+			{
+				b2world.destroyBody(removeFlagged.get(0));
+				removeFlagged.remove(0);
+			}
+			cameraHelper.update(deltaTime);
+			if (lives > 0 && inWater)
+			{
+				lives--;
+				if (lives == 0)
+					timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
+				else
+					initLevel();
+			}
+			//		level.mountains.updateScrollPosition(cameraHelper.getPosition());
 		}
-		cameraHelper.update(deltaTime);
 	}
 	
 	/**
@@ -422,7 +498,15 @@ public class WorldController extends InputAdapter implements Disposable
 		y += cameraHelper.getPosition().y;
 		cameraHelper.setPosition(x, y);
 	}
-
+	
+	/**
+	 * Called when game is over.
+	 */
+	private void gameOver()
+	{
+		game.setScreen(new MenuScreen(game, true, score));
+	}
+	
 	/**
 	 * Frees up memory used by box2d's physics world.
 	 */

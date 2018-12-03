@@ -35,11 +35,6 @@ public class Goal extends AbstractGameObject
 		//bounds.set(0, 0, dimension.x, dimension.y);
 	}
 	
-	@Override
-	public void update(float deltaTime)
-	{
-	}
-	
 	
 	/**
 	 * Renders the goal
