@@ -35,6 +35,7 @@ public class Assets implements Disposable, AssetErrorListener
 	public AssetGun gun;
 	public AssetBullet bullet;
 	public AssetLevelDecoration levelDecoration;
+	public AssetGoal goal;
 
 	// singleton: prevent instantiation from other classes
 	private Assets()
@@ -114,6 +115,7 @@ public class Assets implements Disposable, AssetErrorListener
 		gun = new AssetGun(atlas);
 		bullet = new AssetBullet(atlas);
 		levelDecoration = new AssetLevelDecoration(atlas);
+		goal = new AssetGoal(atlas);
 	}
 
 	/**
@@ -311,6 +313,26 @@ public class Assets implements Disposable, AssetErrorListener
 		public AssetBullet(TextureAtlas atlas)
 		{
 			bullet = atlas.findRegion("bullet");
+		}
+	}
+	
+	/**
+	 * @author Kevin Rutter
+	 * This class holds info for the goal texture
+	 */
+	public class AssetGoal
+	{
+		public final AtlasRegion goal;
+
+		/**
+		 * Sets gun to hold the reference to the correct region from the atlas
+		 * 
+		 * @param atlas
+		 *            Texture atlas
+		 */
+		public AssetGoal(TextureAtlas atlas)
+		{
+			goal = atlas.findRegion("goal");
 		}
 	}
 }
