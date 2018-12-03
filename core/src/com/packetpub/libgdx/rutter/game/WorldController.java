@@ -31,6 +31,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -226,14 +227,17 @@ public class WorldController extends InputAdapter implements Disposable
 		body = b2world.createBody(bodyDef);
 		ball.body = body;
 		polygonShape = new PolygonShape();
-		origin.x = ball.dimension.x / 2.0f;
-		origin.y = ball.dimension.y / 2.0f;
+		origin.x = ball.origin.x;
+		origin.y = ball.origin.y;
 		polygonShape.setAsBox(ball.dimension.x /2.0f, ball.dimension.y / 2.0f, origin, 0);
 		fixtureDef = new FixtureDef();
 		fixtureDef.shape = polygonShape;
-		fixtureDef.density = 10;
+	//	CircleShape circle = new CircleShape();
+		//circle.setRadius(ball.origin.x/2);
+		fixtureDef.shape = polygonShape;
+		fixtureDef.density = 1;
 		fixtureDef.restitution = 0.001f;
-		fixtureDef.friction = 0.999f;
+		fixtureDef.friction = 1f;
 		body.createFixture(fixtureDef);
 		body.setUserData(ball);
 		polygonShape.dispose();
@@ -274,16 +278,18 @@ public class WorldController extends InputAdapter implements Disposable
 				// Player Movement
 				if (Gdx.input.isKeyPressed(Keys.LEFT))
 				{
-					level.riceBall.body.applyForceToCenter(-300, 0, true);
+					level.riceBall.body.applyForceToCenter(-50, 0, true);
+					level.riceBall.viewDirection = RiceBall.VIEW_DIRECTION.LEFT;
 				}
 				else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 				{
-					level.riceBall.body.applyForceToCenter(300, 0, true);
+					level.riceBall.body.applyForceToCenter(50, 0, true);
+					level.riceBall.viewDirection = RiceBall.VIEW_DIRECTION.RIGHT;
 				}
 				if (Gdx.input.isKeyJustPressed(Keys.SPACE) && !level.riceBall.isJumping)
 				{
 					level.riceBall.isJumping = true;
-					level.riceBall.body.applyForceToCenter(0, 2000, true);
+					level.riceBall.body.applyForceToCenter(0, 200, true);
 				}
 			}
 			if (level.riceBall.health <= 0)
