@@ -18,6 +18,13 @@ public abstract class AbstractGameObject
 	public Vector2 scale;
 	public float rotation;
 	
+	private final float FLOAT_CYCLE_TIME = .5f;
+	private final float FLOAT_AMPLITUDE = 0.5f;
+	
+	private float floatCycleTimeLeft;
+	private boolean floatingDownwards;
+	private Vector2 floatTargetPosition;
+	
 	public Body body;
 	
 	/**
@@ -30,6 +37,10 @@ public abstract class AbstractGameObject
 		origin = new Vector2();
 		scale = new Vector2(1,1);
 		rotation = 0;
+		
+		floatingDownwards = false;
+		floatCycleTimeLeft = MathUtils.random(0, FLOAT_CYCLE_TIME / 2);
+		floatTargetPosition = null;
 	}
 	
 	/**
@@ -47,4 +58,27 @@ public abstract class AbstractGameObject
 	 * @param batch is the sprite batch it uses
 	 */
 	public abstract void render (SpriteBatch batch);
+	
+	/**
+	 * Handles the lerp floating of certain items.
+	 * @param deltaTime	Time since last frame.
+	 */
+	public void lerpUpdate(float deltaTime)
+	{
+		floatCycleTimeLeft -= deltaTime;
+		if (floatTargetPosition == null)
+			floatTargetPosition = new Vector2(position);
+
+		if (floatCycleTimeLeft <= 0)
+		{
+			floatCycleTimeLeft = FLOAT_CYCLE_TIME;
+			floatingDownwards = !floatingDownwards;
+			body.setLinearVelocity(0, FLOAT_AMPLITUDE * (floatingDownwards ? -1 : 1));
+		}
+		else
+		{
+			body.setLinearVelocity(body.getLinearVelocity().scl(0.98f));
+		}
+		position.lerp(floatTargetPosition, deltaTime);
+	}
 }
