@@ -445,7 +445,7 @@ public class WorldController extends InputAdapter implements Disposable
 				else
 					initLevel();
 			}
-			//		level.mountains.updateScrollPosition(cameraHelper.getPosition());
+			level.background.updateScrollPosition(cameraHelper.getPosition());
 		}
 	}
 	

@@ -3,6 +3,7 @@ package com.packetpub.libgdx.rutter.game.objects;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.packetpub.libgdx.rutter.game.Assets;
 
 /**
@@ -50,7 +51,7 @@ public class Background extends AbstractGameObject
 	 * @param offsetY   y offset for drawing the background
 	 * @param tintColor desired tint to background
 	 */
-	private void drawGrass(SpriteBatch batch, float offsetX, float offsetY, float tintColor)
+	private void drawGrass(SpriteBatch batch, float offsetX, float offsetY, float tintColor, float parallaxSpeedX)
 	{
 		TextureRegion reg = null;
 		batch.setColor(tintColor, tintColor, tintColor, 1);
@@ -59,16 +60,16 @@ public class Background extends AbstractGameObject
 
 		// background spans the whole level
 		int backgroundLength = 0;
-		backgroundLength += MathUtils.ceil(length / (2 * dimension.x));
+		backgroundLength += MathUtils.ceil(length / (2 * dimension.x) * (1 - parallaxSpeedX));
 		backgroundLength += MathUtils.ceil(0.6f + offsetX);
 
 		for (int i = 0; i < backgroundLength; i++)
 		{
 			// grass
 			reg = regGrass;
-			batch.draw(reg.getTexture(), origin.x + xRel + position.x, origin.y + yRel + position.y, origin.x, origin.y, dimension.x,
-					dimension.y, scale.x, scale.y*1.4f, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(),
-					reg.getRegionHeight(), false, false);
+			batch.draw(reg.getTexture(), origin.x + xRel + position.x * parallaxSpeedX, origin.y + yRel + position.y,
+					origin.x, origin.y, dimension.x, dimension.y, scale.x, scale.y*2, rotation, reg.getRegionX(),
+					reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), false, false);
 			xRel += dimension.x;
 		}
 
@@ -84,7 +85,7 @@ public class Background extends AbstractGameObject
 	 * @param offsetY   y offset for drawing the background
 	 * @param tintColor desired tint to background
 	 */
-	private void drawFence(SpriteBatch batch, float offsetX, float offsetY, float tintColor)
+	private void drawFence(SpriteBatch batch, float offsetX, float offsetY, float tintColor, float parallaxSpeedX)
 	{
 		TextureRegion reg = null;
 		batch.setColor(tintColor, tintColor, tintColor, 1);
@@ -93,16 +94,16 @@ public class Background extends AbstractGameObject
 
 		// background spans the whole level
 		int backgroundLength = 0;
-		backgroundLength += MathUtils.ceil(length / (2 * dimension.x));
+		backgroundLength += MathUtils.ceil(length / (2 * dimension.x) * (1 - parallaxSpeedX));
 		backgroundLength += MathUtils.ceil(0.6f + offsetX);
 
 		for (int i = 0; i < backgroundLength; i++)
 		{
 			// fence
 			reg = regFence;
-			batch.draw(reg.getTexture(), origin.x + xRel + position.x, origin.y + yRel + position.y, origin.x, origin.y, dimension.x,
-					dimension.y, scale.x, scale.y*2, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(),
-					reg.getRegionHeight(), false, false);
+			batch.draw(reg.getTexture(), origin.x + xRel + position.x * parallaxSpeedX, origin.y + yRel + position.y,
+					origin.x, origin.y, dimension.x, dimension.y, scale.x, scale.y*2, rotation, reg.getRegionX(),
+					reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), false, false);
 			xRel += dimension.x;
 		}
 
@@ -119,13 +120,21 @@ public class Background extends AbstractGameObject
 	public void render(SpriteBatch batch)
 	{
 		// fences in the farthest background layer
-		drawFence(batch, 0.5f, 0f, 0.5f);
+		drawFence(batch, 0.5f, .5f, 1f, .8f);
 
 		// grass in the second background layer
-		drawGrass(batch, 0.25f, 0.25f, 0.7f);
+		drawGrass(batch, 0.25f, .25f, 0.5f, .5f);
 
 		// grass in the closest background layer
-		drawGrass(batch, 0.0f, 0.0f, 0.9f);
+		drawGrass(batch, 0.0f, -.15f, 0.9f, .3f);
 	}
 
+	/**
+	 * Updates the scrolling of the background
+	 * @param camPosition	Vector of the camera's position
+	 */
+	public void updateScrollPosition(Vector2 camPosition)
+	{
+		position.set(camPosition.x, position.y);
+	}
 }
