@@ -58,6 +58,16 @@ public class Gun extends AbstractGameObject
 				scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(),
 				false, false);
 	}
+	
+	/**
+	 * Handles updating updating the item to make it float with lerp.
+	 */
+	@Override
+	public void update(float deltaTime)
+	{
+		super.update(deltaTime);
+		super.lerpUpdate(deltaTime);
+	}
 
 	/**
 	 * Returns a score value when called
