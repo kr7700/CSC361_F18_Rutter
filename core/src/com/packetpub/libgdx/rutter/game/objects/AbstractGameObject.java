@@ -1,6 +1,8 @@
 package com.packetpub.libgdx.rutter.game.objects;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -17,7 +19,7 @@ public abstract class AbstractGameObject
 	public Vector2 origin;
 	public Vector2 scale;
 	public float rotation;
-	
+		
 	private final float FLOAT_CYCLE_TIME = .5f;
 	private final float FLOAT_AMPLITUDE = 0.5f;
 	
@@ -26,6 +28,9 @@ public abstract class AbstractGameObject
 	private Vector2 floatTargetPosition;
 	
 	public Body body;
+	
+	public float stateTime;
+	public Animation<TextureRegion> animation;
 	
 	/**
 	 * Builds the game object
@@ -44,13 +49,27 @@ public abstract class AbstractGameObject
 	}
 	
 	/**
+	 * Sets the current animation from the animation object
+	 * @param animation animation object
+	 */
+	public void setAnimation(Animation animation)
+	{
+		this.animation = animation;
+		stateTime = 0;
+	}
+	
+	/**
 	 * Updates the object based on the time since last frame
 	 * @param deltaTime		Time since last frame
 	 */
 	public void update (float deltaTime)
 	{
-		position.set(body.getPosition());
-		rotation = body.getAngle() * MathUtils.radiansToDegrees;
+		stateTime += deltaTime;
+		if (body != null)
+		{
+			position.set(body.getPosition());
+			rotation = body.getAngle() * MathUtils.radiansToDegrees;
+		}
 	}
 	
 	/**

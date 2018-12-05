@@ -1,5 +1,6 @@
 package com.packetpub.libgdx.rutter.game.objects;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,6 +14,7 @@ import com.packetpub.libgdx.rutter.game.Assets;
 public class Bug extends AbstractGameObject
 {
 	private TextureRegion regBug;
+	private Animation animBug;
 
 	public boolean killed;
 	public boolean grounded = false;
@@ -34,6 +36,9 @@ public class Bug extends AbstractGameObject
 		dimension.set(1f, 2.0f);
 
 		regBug = Assets.instance.bug.bug;
+		animBug = Assets.instance.bug.animBug;
+		System.out.println("bug frames:"+animBug.getKeyFrames().length);
+		setAnimation(animBug);
 
 		// Set bounding box for collision detection
 		//bounds.set(0, 0, dimension.x, dimension.y);
@@ -49,8 +54,8 @@ public class Bug extends AbstractGameObject
 		if (killed)
 			return;
 
-		TextureRegion reg = null;
-		reg = regBug;
+		TextureRegion reg = null;		
+		reg = animation.getKeyFrame(stateTime, true);
 		batch.draw(reg.getTexture(), position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x,
 				scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(),
 				false, false);
@@ -81,6 +86,7 @@ public class Bug extends AbstractGameObject
 	 */
 	public void update (float deltaTime)
 	{
+		super.update(deltaTime);
 		if (grounded)
 			{
 			frames++;

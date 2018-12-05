@@ -4,9 +4,23 @@ size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-bug
+anim_bug
   rotate: false
   xy: 654, 318
+  size: 100, 200
+  orig: 100, 200
+  offset: 0, 0
+  index: 1
+anim_bug
+  rotate: false
+  xy: 756, 318
+  size: 100, 200
+  orig: 100, 200
+  offset: 0, 0
+  index: 2
+bug
+  rotate: false
+  xy: 858, 318
   size: 100, 200
   orig: 100, 200
   offset: 0, 0
@@ -55,35 +69,35 @@ grass
   index: -1
 item_gun
   rotate: false
-  xy: 756, 418
+  xy: 912, 548
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 item_nori
   rotate: false
-  xy: 858, 443
+  xy: 706, 241
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 item_rice_grain
   rotate: false
-  xy: 97, 2
+  xy: 604, 62
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 riceball
   rotate: false
-  xy: 756, 316
+  xy: 604, 216
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 riceballhappy
   rotate: false
-  xy: 912, 548
+  xy: 604, 114
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
