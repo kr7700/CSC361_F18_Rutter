@@ -6,9 +6,11 @@ import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.packetpub.libgdx.rutter.util.Constants;
 
@@ -213,6 +215,7 @@ public class Assets implements Disposable, AssetErrorListener
 	public class AssetBug
 	{
 		public final AtlasRegion bug;
+		public final Animation animBug;
 
 		/**
 		 * Sets bug to hold the reference to the correct region from atlas.
@@ -223,6 +226,11 @@ public class Assets implements Disposable, AssetErrorListener
 		public AssetBug(TextureAtlas atlas)
 		{
 			bug = atlas.findRegion("bug");
+			Array<AtlasRegion> regions = null;
+			regions = atlas.findRegions("anim_bug");
+			System.out.println("bug regions: "+regions.size);
+			animBug = new Animation(1.0f/2.0f, regions,
+					Animation.PlayMode.LOOP_PINGPONG);
 		}
 	}
 
