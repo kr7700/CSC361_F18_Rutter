@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -26,6 +28,8 @@ public class Assets implements Disposable, AssetErrorListener
 
 	private AssetManager assetManager;
 
+	public AssetSounds sounds;
+	public AssetMusic music;
 	public AssetFonts fonts;
 	public AssetRiceBall riceball;
 	public AssetBug bug;
@@ -92,6 +96,14 @@ public class Assets implements Disposable, AssetErrorListener
 		assetManager.setErrorListener(this);
 		// load texture atlas
 		assetManager.load(Constants.TEXTURE_ATLAS_OBJECTS, TextureAtlas.class);
+		// load sounds
+		assetManager.load("sounds/jump.wav", Sound.class);
+		assetManager.load("sounds/jump_with_feather.wav", Sound.class);
+		assetManager.load("sounds/pickup_coin.wav", Sound.class);
+		assetManager.load("sounds/pickup_feather.wav", Sound.class);
+		assetManager.load("sounds/live_lost.wav", Sound.class);
+		// load music
+		assetManager.load("music/keith303_-_brand_new_highscore.mp3", Music.class);
 		// start loading assets and wait until finished
 		assetManager.finishLoading();
 		Gdx.app.debug(TAG, "# of assets loaded: " + assetManager.getAssetNames().size);
@@ -333,6 +345,50 @@ public class Assets implements Disposable, AssetErrorListener
 		public AssetGoal(TextureAtlas atlas)
 		{
 			goal = atlas.findRegion("goal");
+		}
+	}
+	
+	/**
+	 * @Author Kevin Rutter
+	 * This class holds info for the sounds
+	 */
+	public class AssetSounds
+	{
+		public final Sound jump;
+		public final Sound jumpWithFeather;
+		public final Sound pickupCoin;
+		public final Sound pickupFeather;
+		public final Sound liveLost;
+
+		/**
+		 * Gets all of the sounds.
+		 * @param am	The assetmanager
+		 */
+		public AssetSounds(AssetManager am)
+		{
+			jump = am.get("sounds/jump.wav", Sound.class);
+			jumpWithFeather = am.get("sounds/jump_with_feather.wav", Sound.class);
+			pickupCoin = am.get("sounds/pickup_coin.wav", Sound.class);
+			pickupFeather = am.get("sounds/pickup_feather.wav", Sound.class);
+			liveLost = am.get("sounds/live_lost.wav", Sound.class);
+		}
+	}
+
+	/**
+	 * @Author Kevin Rutter
+	 * This class holds info for the game music
+	 */
+	public class AssetMusic
+	{
+		public final Music song01;
+
+		/**
+		 * Gets all of the music.
+		 * @param am	The assetmanager
+		 */
+		public AssetMusic(AssetManager am)
+		{
+			song01 = am.get("music/keith303_-_brand_new_highscore.mp3", Music.class);
 		}
 	}
 }
