@@ -2,6 +2,7 @@ package com.packetpub.libgdx.rutter.game.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -36,6 +37,7 @@ public class RiceBall extends AbstractGameObject
 	public JUMP_STATE jumpState;
 	public int bullets;
 	public int health;
+	public ParticleEffect dustParticles = new ParticleEffect();
 
 	public boolean isJumping = false;
 	
@@ -71,6 +73,9 @@ public class RiceBall extends AbstractGameObject
 		//Power-ups
 		bullets = 0;
 		health = 1;
+		
+		// Particles
+		dustParticles.load(Gdx.files.internal("particles/dust.pfx"), Gdx.files.internal("particles"));
 	}
 	
 	/**
@@ -152,12 +157,14 @@ public class RiceBall extends AbstractGameObject
 		System.out.println("health is now " + health);
 	}
 	
-//	/**
-//	 * Updates the object, when called upon 60 times every secound
-//	 */
-//	@Override
-//	public void update (float deltaTime) {
-//		super.update(deltaTime);
+	/**
+	 * Updates the object, when called upon 60 times every secound
+	 */
+	@Override
+	public void update (float deltaTime)
+	{
+		super.update(deltaTime);
+		dustParticles.update(deltaTime);
 //		if (velocity.x != 0) {
 //			viewDirection = velocity.x < 0 ? VIEW_DIRECTION.LEFT : 
 //	VIEW_DIRECTION.RIGHT;
@@ -193,7 +200,7 @@ public class RiceBall extends AbstractGameObject
 //		}
 //		if (jumpState != JUMP_STATE.GROUNDED)
 //		super.updateMotionY(deltaTime);
-//	}
+	}
 	
 	/**
 	 * Renders the riceball in the world using the sprite batch
@@ -222,6 +229,9 @@ public class RiceBall extends AbstractGameObject
 			else if (viewDirection == VIEW_DIRECTION.LEFT)
 				batch.draw(reg.getTexture(),position.x-.75f, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x/2, scale.y/2, 0,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), true, false);
 		}
+		
+		// Draw Particles
+		dustParticles.draw(batch);
 	}
 	
 	/**
