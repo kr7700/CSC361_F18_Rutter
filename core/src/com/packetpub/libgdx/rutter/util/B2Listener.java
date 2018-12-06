@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.packetpub.libgdx.rutter.game.Level;
 import com.packetpub.libgdx.rutter.game.WorldController;
 import com.packetpub.libgdx.rutter.game.objects.Bug;
+import com.packetpub.libgdx.rutter.game.objects.Bullet;
 import com.packetpub.libgdx.rutter.game.objects.Gun;
 import com.packetpub.libgdx.rutter.game.objects.Nori;
 import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
@@ -93,7 +94,12 @@ public class B2Listener implements ContactListener
 			}
 			if (fixtureA.getBody().getUserData().equals(level.waterOverlay))
 			{
-				level.riceBall.changeHealth(-2);
+				worldController.inWater = true;
+			}
+			if (fixtureA.getBody().getUserData().equals(level.goal))
+			{
+				worldController.goalReached = true;
+				worldController.timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
 			}
 			if (fixtureA.getBody().getUserData().toString() == "bug")
 			{
@@ -119,6 +125,59 @@ public class B2Listener implements ContactListener
 		{
 			Bug bug = (Bug) fixtureB.getBody().getUserData();
 			bug.grounded = true;
+		}
+		
+		if (fixtureA.getBody().getUserData().toString() == "bullet")
+		{
+			if (fixtureB.getBody().getUserData().toString() == "bug")
+			{
+				for (Bug bug : level.bugs)
+				{
+					if (fixtureB.getBody().getUserData().equals(bug))
+					{
+						worldController.removeFlagged.add(fixtureB.getBody());
+						bug.killed = true;
+						worldController.score += bug.getScore();
+					}
+				}
+			}
+			if (fixtureB.getBody().getUserData().toString() == "bug" || fixtureB.getBody().getUserData().toString() == "dirt" || fixtureB.getBody().getUserData().toString() == "water")
+			{
+				for (Bullet bullet : level.bullets)
+				{
+					if (fixtureA.getBody().getUserData().equals(bullet))
+					{
+						worldController.removeFlagged.add(fixtureA.getBody());
+						bullet.onScreen = false;
+					}
+				}
+			}
+		}
+		if (fixtureB.getBody().getUserData().toString() == "bullet")
+		{
+			if (fixtureA.getBody().getUserData().toString() == "bug")
+			{
+				for (Bug bug : level.bugs)
+				{
+					if (fixtureA.getBody().getUserData().equals(bug))
+					{
+						worldController.removeFlagged.add(fixtureA.getBody());
+						bug.killed = true;
+						worldController.score += bug.getScore();
+					}
+				}
+			}
+			//if (fixtureA.getBody().getUserData().toString() == "bug" || fixtureA.getBody().getUserData().toString() == "dirt" || fixtureA.getBody().getUserData().toString() == "water")
+			{
+				for (Bullet bullet : level.bullets)
+				{
+					if (fixtureB.getBody().getUserData().equals(bullet))
+					{
+						worldController.removeFlagged.add(fixtureB.getBody());
+						bullet.onScreen = false;
+					}
+				}
+			}
 		}
 
 	}

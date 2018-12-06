@@ -4,9 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.packetpub.libgdx.rutter.util.Constants;
 
@@ -26,6 +30,8 @@ public class Assets implements Disposable, AssetErrorListener
 
 	private AssetManager assetManager;
 
+	public AssetSounds sounds;
+	public AssetMusic music;
 	public AssetFonts fonts;
 	public AssetRiceBall riceball;
 	public AssetBug bug;
@@ -33,7 +39,9 @@ public class Assets implements Disposable, AssetErrorListener
 	public AssetRiceGrain ricegrain;
 	public AssetNori nori;
 	public AssetGun gun;
+	public AssetBullet bullet;
 	public AssetLevelDecoration levelDecoration;
+	public AssetGoal goal;
 
 	// singleton: prevent instantiation from other classes
 	private Assets()
@@ -90,6 +98,15 @@ public class Assets implements Disposable, AssetErrorListener
 		assetManager.setErrorListener(this);
 		// load texture atlas
 		assetManager.load(Constants.TEXTURE_ATLAS_OBJECTS, TextureAtlas.class);
+		// load sounds
+		assetManager.load("sounds/jump.wav", Sound.class);
+		assetManager.load("sounds/oof.wav", Sound.class);
+		assetManager.load("sounds/gunshot.wav", Sound.class);
+		assetManager.load("sounds/reload.wav", Sound.class);
+		assetManager.load("sounds/live_lost.wav", Sound.class);
+		// load music
+		assetManager.load("music/keith303_-_brand_new_highscore.mp3", Music.class);
+		assetManager.load("music/E1M1.mp3", Music.class);
 		// start loading assets and wait until finished
 		assetManager.finishLoading();
 		Gdx.app.debug(TAG, "# of assets loaded: " + assetManager.getAssetNames().size);
@@ -105,13 +122,17 @@ public class Assets implements Disposable, AssetErrorListener
 
 		// create game resource objects
 		fonts = new AssetFonts();
+		sounds = new AssetSounds(assetManager);
+		music = new AssetMusic(assetManager);
 		riceball = new AssetRiceBall(atlas);
 		bug = new AssetBug(atlas);
 		dirt = new AssetDirt(atlas);
 		ricegrain = new AssetRiceGrain(atlas);
 		nori = new AssetNori(atlas);
 		gun = new AssetGun(atlas);
+		bullet = new AssetBullet(atlas);
 		levelDecoration = new AssetLevelDecoration(atlas);
+		goal = new AssetGoal(atlas);
 	}
 
 	/**
@@ -197,6 +218,7 @@ public class Assets implements Disposable, AssetErrorListener
 	public class AssetBug
 	{
 		public final AtlasRegion bug;
+		public final Animation animBug;
 
 		/**
 		 * Sets bug to hold the reference to the correct region from atlas.
@@ -207,6 +229,11 @@ public class Assets implements Disposable, AssetErrorListener
 		public AssetBug(TextureAtlas atlas)
 		{
 			bug = atlas.findRegion("bug");
+			Array<AtlasRegion> regions = null;
+			regions = atlas.findRegions("anim_bug");
+			System.out.println("bug regions: "+regions.size);
+			animBug = new Animation(1.0f/2.0f, regions,
+					Animation.PlayMode.LOOP_PINGPONG);
 		}
 	}
 
@@ -289,6 +316,93 @@ public class Assets implements Disposable, AssetErrorListener
 		public AssetGun(TextureAtlas atlas)
 		{
 			gun = atlas.findRegion("item_gun");
+		}
+	}
+	
+	/**
+	 * @author Kevin Rutter
+	 * This class holds info for the bullet texture
+	 */
+	public class AssetBullet
+	{
+		public final AtlasRegion bullet;
+
+		/**
+		 * Sets gun to hold the reference to the correct region from the atlas
+		 * 
+		 * @param atlas
+		 *            Texture atlas
+		 */
+		public AssetBullet(TextureAtlas atlas)
+		{
+			bullet = atlas.findRegion("bullet");
+		}
+	}
+	
+	/**
+	 * @author Kevin Rutter
+	 * This class holds info for the goal texture
+	 */
+	public class AssetGoal
+	{
+		public final AtlasRegion goal;
+
+		/**
+		 * Sets gun to hold the reference to the correct region from the atlas
+		 * 
+		 * @param atlas
+		 *            Texture atlas
+		 */
+		public AssetGoal(TextureAtlas atlas)
+		{
+			goal = atlas.findRegion("goal");
+		}
+	}
+	
+	/**
+	 * @Author Kevin Rutter
+	 * This class holds info for the sounds
+	 */
+	public class AssetSounds
+	{
+		public final Sound jump;
+		public final Sound liveLost;
+		public final Sound gunshot;
+		public final Sound oof;
+		public final Sound reload;
+
+		/**
+		 * Gets all of the sounds.
+		 * @param am	The assetmanager
+		 */
+		public AssetSounds(AssetManager am)
+		{
+			jump = am.get("sounds/jump.wav", Sound.class);
+			liveLost = am.get("sounds/live_lost.wav", Sound.class);
+			gunshot = am.get("sounds/gunshot.wav", Sound.class);
+			oof = am.get("sounds/oof.wav", Sound.class);
+			reload = am.get("sounds/reload.wav", Sound.class);
+		}
+	}
+
+	/**
+	 * @Author Kevin Rutter
+	 * This class holds info for the game music
+	 */
+	public class AssetMusic
+	{
+		public final Music song01;
+		public final Music song02;
+
+
+		/**
+		 * Gets all of the music.
+		 * @param am	The assetmanager
+		 */
+		public AssetMusic(AssetManager am)
+		{
+			song01 = am.get("music/keith303_-_brand_new_highscore.mp3", Music.class);
+			song02 = am.get("music/E1M1.mp3", Music.class);
 		}
 	}
 }

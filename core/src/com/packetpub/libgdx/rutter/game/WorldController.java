@@ -5,22 +5,35 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.packetpub.libgdx.rutter.game.objects.Bug;
+import com.packetpub.libgdx.rutter.game.objects.Bullet;
 import com.packetpub.libgdx.rutter.game.objects.Dirt;
+import com.packetpub.libgdx.rutter.game.objects.Goal;
 import com.packetpub.libgdx.rutter.game.objects.Gun;
 import com.packetpub.libgdx.rutter.game.objects.Nori;
 import com.packetpub.libgdx.rutter.game.objects.RiceBall;
 import com.packetpub.libgdx.rutter.game.objects.RiceBall.JUMP_STATE;
 import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
 import com.packetpub.libgdx.rutter.game.objects.WaterOverlay;
+import com.packetpub.libgdx.rutter.screens.MenuScreen;
+import com.packetpub.libgdx.rutter.util.AudioManager;
 import com.packetpub.libgdx.rutter.util.B2Listener;
 import com.packetpub.libgdx.rutter.util.CameraHelper;
 import com.packetpub.libgdx.rutter.util.Constants;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
@@ -31,11 +44,23 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 
 /**
  * @author Kevin Rutter
@@ -52,8 +77,15 @@ public class WorldController extends InputAdapter implements Disposable
 	public CameraHelper cameraHelper;
 	
 	public Level level;
+	public Game game;
 	public int lives = Constants.LIVES_START;
 	public int score = 0;
+	public boolean goalReached;
+	public boolean inWater = false;
+	public boolean gameEnded = false;
+	public float timeLeftGameOverDelay;
+	private TextField txt;
+	private Stage stage;
 	
 	public World b2world;
 	public B2Listener listener;
@@ -61,10 +93,12 @@ public class WorldController extends InputAdapter implements Disposable
 	
 	/**
 	 * Constructor for WorldController.
+	 * @param game The game application listener.
 	 */
-	public WorldController()
+	public WorldController(Game game)
 	{
 		init();
+		this.game = game;
 	}
 	
 	/**
@@ -83,6 +117,10 @@ public class WorldController extends InputAdapter implements Disposable
 	 */
 	public void initLevel()
 	{
+		score = 0;
+		goalReached = false;
+		inWater = false;
+		timeLeftGameOverDelay = 0;
 		level = new Level(Constants.LEVEL_01);
 		cameraHelper.setTarget(level.riceBall);
 		initPhysics();
@@ -226,16 +264,37 @@ public class WorldController extends InputAdapter implements Disposable
 		body = b2world.createBody(bodyDef);
 		ball.body = body;
 		polygonShape = new PolygonShape();
-		origin.x = ball.dimension.x / 2.0f;
-		origin.y = ball.dimension.y / 2.0f;
+		origin.x = ball.origin.x;
+		origin.y = ball.origin.y;
 		polygonShape.setAsBox(ball.dimension.x /2.0f, ball.dimension.y / 2.0f, origin, 0);
 		fixtureDef = new FixtureDef();
 		fixtureDef.shape = polygonShape;
-		fixtureDef.density = 10;
+	//	CircleShape circle = new CircleShape();
+		//circle.setRadius(ball.origin.x/2);
+		fixtureDef.shape = polygonShape;
+		fixtureDef.density = 1;
 		fixtureDef.restitution = 0.001f;
-		fixtureDef.friction = 0.999f;
+		fixtureDef.friction = 1f;
 		body.createFixture(fixtureDef);
 		body.setUserData(ball);
+		polygonShape.dispose();
+		
+		//Goal
+		Goal goal = level.goal;
+		bodyDef = new BodyDef();
+		bodyDef.type = BodyType.StaticBody;
+		bodyDef.position.set(goal.position);
+		body = b2world.createBody(bodyDef);
+		goal.body = body;
+		polygonShape = new PolygonShape();
+		origin.x = goal.dimension.x / 2.0f;
+		origin.y = goal.dimension.y / 2.0f;
+		polygonShape.setAsBox(goal.dimension.x / 2.0f, goal.dimension.y / 2.0f, origin, 0);
+		fixtureDef = new FixtureDef();
+		fixtureDef.shape = polygonShape;
+		fixtureDef.isSensor = true;
+		body.createFixture(fixtureDef);
+		body.setUserData(goal);
 		polygonShape.dispose();
 		
 		listener = new B2Listener(level, this);
@@ -274,22 +333,96 @@ public class WorldController extends InputAdapter implements Disposable
 				// Player Movement
 				if (Gdx.input.isKeyPressed(Keys.LEFT))
 				{
-					level.riceBall.body.applyForceToCenter(-300, 0, true);
+					level.riceBall.body.applyForceToCenter(-50, 0, true);
+					level.riceBall.viewDirection = RiceBall.VIEW_DIRECTION.LEFT;
+					if (!level.riceBall.isJumping)
+					{
+						level.riceBall.dustParticles.setPosition(level.riceBall.position.x + level.riceBall.dimension.x / 2, level.riceBall.position.y);
+						level.riceBall.dustParticles.start();
+					}
 				}
 				else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 				{
-					level.riceBall.body.applyForceToCenter(300, 0, true);
+					level.riceBall.body.applyForceToCenter(50, 0, true);
+					level.riceBall.viewDirection = RiceBall.VIEW_DIRECTION.RIGHT;
+					if (!level.riceBall.isJumping)
+					{
+						level.riceBall.dustParticles.setPosition(level.riceBall.position.x + level.riceBall.dimension.x / 2, level.riceBall.position.y);
+						level.riceBall.dustParticles.start();
+					}
+				}
+				else
+				{
+					level.riceBall.dustParticles.allowCompletion();
 				}
 				if (Gdx.input.isKeyJustPressed(Keys.SPACE) && !level.riceBall.isJumping)
 				{
+					AudioManager.instance.play(Assets.instance.sounds.jump);
 					level.riceBall.isJumping = true;
-					level.riceBall.body.applyForceToCenter(0, 2000, true);
+					level.riceBall.body.applyForceToCenter(0, 200, true);
+					level.riceBall.dustParticles.allowCompletion();
+				}
+				if (Gdx.input.isKeyJustPressed(Keys.CONTROL_LEFT) && level.riceBall.bullets > 0)
+				{
+					AudioManager.instance.play(Assets.instance.sounds.gunshot);
+					level.riceBall.bullets--;
+					fireBullet();
 				}
 			}
 			if (level.riceBall.health <= 0)
 			{
+				AudioManager.instance.play(Assets.instance.sounds.liveLost);
 				lives--;
-				init();
+				initLevel();
+			}
+		}
+	}
+	
+	/**
+	 * Get a bullet and place it into the world.
+	 */
+	public void fireBullet()
+	{
+		boolean bulletNotFired = true;
+		for (int i = 0; i < level.bullets.size & bulletNotFired; i++)
+		{
+			Bullet bullet = level.bullets.get(i);
+			if (!bullet.onScreen)
+			{
+				bulletNotFired = false;
+				if (level.riceBall.viewDirection.equals(RiceBall.VIEW_DIRECTION.RIGHT))
+					bullet.position.x = level.riceBall.position.x + 1.7f;
+				else if (level.riceBall.viewDirection.equals(RiceBall.VIEW_DIRECTION.LEFT))
+				{
+					bullet.position.x = level.riceBall.position.x - .7f;
+					bullet.reversed = true;
+				}
+				
+				bullet.position.y = level.riceBall.position.y + .3f;
+				bullet.onScreen = true;
+				
+				BodyDef bodyDef = new BodyDef();
+				bodyDef.type = BodyType.DynamicBody;
+				bodyDef.position.set(bullet.position);
+				Body body = b2world.createBody(bodyDef);
+				bullet.body = body;
+				
+				if (level.riceBall.viewDirection.equals(RiceBall.VIEW_DIRECTION.RIGHT))
+					body.setLinearVelocity(20, 0);
+				if (level.riceBall.viewDirection.equals(RiceBall.VIEW_DIRECTION.LEFT))
+					body.setLinearVelocity(-20, 0);
+				
+				PolygonShape polygonShape = new PolygonShape();
+				Vector2 origin = new Vector2(bullet.origin.x, bullet.origin.y);
+				polygonShape.setAsBox(bullet.dimension.x /2.0f, bullet.dimension.y / 2.0f, origin, 0);
+				FixtureDef fixtureDef = new FixtureDef();
+				fixtureDef.shape = polygonShape;
+				fixtureDef.density = 1;
+				fixtureDef.restitution = 0;
+				fixtureDef.friction = 1;
+				body.createFixture(fixtureDef);
+				body.setUserData(bullet);
+				polygonShape.dispose();
 			}
 		}
 	}
@@ -300,16 +433,39 @@ public class WorldController extends InputAdapter implements Disposable
 	 */
 	public void update(float deltaTime)
 	{
-		//handleDebugInput(deltaTime);
-		handleInputGame(deltaTime);
-		level.update(deltaTime);
-		b2world.step(deltaTime, 8, 3);
-		while (!removeFlagged.isEmpty())
+		if (!gameEnded)
 		{
-			b2world.destroyBody(removeFlagged.get(0));
-			removeFlagged.remove(0);
+			if (lives == 0 || goalReached)
+			{
+				timeLeftGameOverDelay -= deltaTime;
+				if (timeLeftGameOverDelay < 0)
+				{
+					gameEnded = true;
+					gameOver();
+				}
+			}
+			else
+			{
+				handleInputGame(deltaTime);
+			}
+			level.update(deltaTime);
+			b2world.step(deltaTime, 8, 3);
+			while (!removeFlagged.isEmpty())
+			{
+				b2world.destroyBody(removeFlagged.get(0));
+				removeFlagged.remove(0);
+			}
+			cameraHelper.update(deltaTime);
+			if (lives > 0 && inWater)
+			{
+				lives--;
+				if (lives == 0)
+					timeLeftGameOverDelay = Constants.TIME_DELAY_GAME_OVER;
+				else
+					initLevel();
+			}
+			level.background.updateScrollPosition(cameraHelper.getPosition());
 		}
-		cameraHelper.update(deltaTime);
 	}
 	
 	/**
@@ -361,7 +517,17 @@ public class WorldController extends InputAdapter implements Disposable
 		y += cameraHelper.getPosition().y;
 		cameraHelper.setPosition(x, y);
 	}
-
+	
+	/**
+	 * Called when game is over.
+	 */
+	private void gameOver()
+	{
+		AudioManager.instance.stopMusic();
+		AudioManager.instance.play(Assets.instance.music.song01);
+		game.setScreen(new MenuScreen(game, true, score));
+	}
+	
 	/**
 	 * Frees up memory used by box2d's physics world.
 	 */

@@ -7,7 +7,9 @@ import com.badlogic.gdx.utils.Array;
 import com.packetpub.libgdx.rutter.game.objects.AbstractGameObject;
 import com.packetpub.libgdx.rutter.game.objects.Background;
 import com.packetpub.libgdx.rutter.game.objects.Bug;
+import com.packetpub.libgdx.rutter.game.objects.Bullet;
 import com.packetpub.libgdx.rutter.game.objects.Dirt;
+import com.packetpub.libgdx.rutter.game.objects.Goal;
 import com.packetpub.libgdx.rutter.game.objects.Gun;
 import com.packetpub.libgdx.rutter.game.objects.Nori;
 import com.packetpub.libgdx.rutter.game.objects.RiceBall;
@@ -35,7 +37,8 @@ public class Level
 		ITEM_BUG(255, 0, 0), //red
 		ITEM_GUN(255, 128, 0), //orange
 		ITEM_NORI(255, 0, 255), //purple
-		ITEM_RICE_GRAIN(255, 255, 0); //yellow
+		ITEM_RICE_GRAIN(255, 255, 0), //yellow
+		GOAL(0, 0, 255); //blue
 		
 		private int color;
 		
@@ -75,6 +78,8 @@ public class Level
 	public Array<Gun> guns;
 	public Array<Nori> nori;
 	public Array<RiceGrain> ricegrains;
+	public Array<Bullet> bullets;
+	public Goal goal;
 	
 	//decoration
 	public Background background;
@@ -102,6 +107,9 @@ public class Level
 		guns = new Array<Gun>();
 		nori = new Array<Nori>();
 		ricegrains = new Array<RiceGrain>();
+		bullets = new Array<Bullet>();
+		for (int i = 0; i < 3; i++)
+			bullets.add(new Bullet());
 		
 		//load image file that represents the level data
 		Pixmap pixmap = new Pixmap(Gdx.files.internal(filename));
@@ -188,6 +196,15 @@ public class Level
 					ricegrains.add((RiceGrain) obj);
 				}
 				
+				//rice grain
+				else if(BLOCK_TYPE.GOAL.sameColor(currentPixel))
+				{
+					obj = new Goal();
+					offsetHeight = -6f;
+					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
+					goal = (Goal)obj;
+				}
+				
 				//unknown object/pixel color
 				else 
 				{
@@ -239,11 +256,18 @@ public class Level
 		for (RiceGrain ricegrain : ricegrains)
 			ricegrain.render(batch);
 		
+		//draw bullets
+		for (Bullet bullet : bullets)
+			bullet.render(batch);
+		
 		//Draw Player Character
 		riceBall.render(batch);
 		
 		//Draw Water overlay
 		waterOverlay.render(batch);
+		
+		//draw goal
+		goal.render(batch);
 	}
 
 	/**
@@ -263,5 +287,8 @@ public class Level
 			individualNori.update(deltaTime);
 		for (RiceGrain ricegrain : ricegrains)
 			ricegrain.update(deltaTime);
+		for (Bullet bullet: bullets)
+			bullet.update(deltaTime);
+		goal.update(deltaTime);
 	}
 }

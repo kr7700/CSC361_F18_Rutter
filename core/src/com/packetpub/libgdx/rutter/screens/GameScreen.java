@@ -16,7 +16,7 @@ public class GameScreen extends AbstractGameScreen
 
 	private static final String TAG = GameScreen.class.getName();
 
-	private WorldController worldController = new WorldController();
+	private WorldController worldController = new WorldController(game);
 	private WorldRenderer worldRenderer;
 
 	private boolean paused;

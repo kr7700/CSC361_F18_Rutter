@@ -19,10 +19,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.packetpub.libgdx.rutter.game.Assets;
+import com.packetpub.libgdx.rutter.util.AudioManager;
 import com.packetpub.libgdx.rutter.util.Constants;
 import com.packetpub.libgdx.rutter.util.GamePreferences;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
@@ -31,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import com.badlogic.gdx.math.Interpolation;
@@ -83,16 +87,26 @@ public class MenuScreen extends AbstractGameScreen
 	private TextButton btnWinScoreExit;
 	private String[] scoreNames = new String[10];
 	private int[] scoreNums = new int[10];
+	private boolean scoresGotten = false;
 
+	// score entry
+	private Window winScoreEntry;
+	private TextField txt;
+	private TextButton btnWinScoreEnter;
+	private boolean gameOver;
+	private int score;
+	
 	/**
 	 * Constructor for the screen that holds the main menu of the game.
 	 * 
 	 * @param game
 	 *            The applicationListener for the game. (CSC361_F18_Rutter)
 	 */
-	public MenuScreen(Game game)
+	public MenuScreen(Game game, boolean gameOver, int score)
 	{
 		super(game);
+		this.gameOver = gameOver;
+		this.score = score;
 	}
 
 	/**
@@ -106,7 +120,8 @@ public class MenuScreen extends AbstractGameScreen
 		skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX_UI),
 				new TextureAtlas(Constants.TEXTURE_ATLAS_LIBGDX_UI));
 
-		getScores();
+		if (!scoresGotten)
+			getScores();
 		
 		// build all layers
 		Table layerBackground = buildBackgroundLayer();
@@ -127,8 +142,212 @@ public class MenuScreen extends AbstractGameScreen
 		stack.add(layerControls);
 		stage.addActor(layerOptionsWindow);
 		stage.addActor(layerScoreWindow);
+		
+		if (gameOver)
+		{
+			stage.addActor(buildScoreEntryWindowLayer());
+			showScoreEntryWindow(true, false);
+			showMenuButtons(false);
+		}
 	}
 
+	/**
+	 * Builds the score name entry window.
+	 * 
+	 * @return The score window.
+	 */
+	private Table buildScoreEntryWindowLayer()
+	{
+		winScoreEntry = new Window("Game Over", skinLibgdx);
+
+		Label lbl = new Label("Your score was " + score + "!", skinLibgdx);
+		winScoreEntry.add(lbl).row();
+		lbl = new Label("Enter your name", skinLibgdx);
+		winScoreEntry.add(lbl).row();
+		txt = new TextField("", skinLibgdx);
+		winScoreEntry.add(txt).row();
+		//Gdx.input.setInputProcessor(txt);
+		winScoreEntry.add(buildScoreEntryButton());
+		
+		// Make score window slightly transparent
+		winScoreEntry.setColor(1, 1, 1, 0.8f);
+		// Let TableLayout recalculate widget sizes and positions
+		winScoreEntry.pack();
+		// Move options window to bottom right corner
+		winScoreEntry.setPosition(Constants.VIEWPORT_GUI_WIDTH - winScore.getWidth() - 50, 50);
+
+		return winScoreEntry;
+	}
+	
+	/**
+	 * Builds a table that contains the enter button in the score entry window.
+	 * 
+	 * @return exit button table.
+	 */
+	private Table buildScoreEntryButton()
+	{
+		Table tbl = new Table();
+		// + Separator
+		Label lbl = null;
+		lbl = new Label("", skinLibgdx);
+		lbl.setColor(0.75f, 0.75f, 0.75f, 1);
+		lbl.setStyle(new LabelStyle(lbl.getStyle()));
+		lbl.getStyle().background = skinLibgdx.newDrawable("white");
+		tbl.add(lbl).colspan(2).height(1).width(220).pad(0, 0, 0, 1);
+		tbl.row();
+		lbl = new Label("", skinLibgdx);
+		lbl.setColor(0.5f, 0.5f, 0.5f, 1);
+		lbl.setStyle(new LabelStyle(lbl.getStyle()));
+		lbl.getStyle().background = skinLibgdx.newDrawable("white");
+		tbl.add(lbl).colspan(2).height(1).width(220).pad(0, 1, 5, 0);
+		tbl.row();
+
+		// + enter Button with event handler
+		btnWinScoreEnter = new TextButton("Enter", skinLibgdx);
+		tbl.add(btnWinScoreEnter);
+		btnWinScoreEnter.addListener(new ChangeListener()
+		{
+			@Override
+			public void changed(ChangeEvent event, Actor actor)
+			{
+				onEnterClicked();
+			}
+		});
+		return tbl;
+	}
+	
+	/**
+	 * Closes the entry window, returns to the main menu.
+	 */
+	private void onEnterClicked()
+	{
+		updateScoreFile(txt.getText());
+		winScoreEntry.setVisible(false);
+		gameOver = false;
+		showMenuButtons(true);
+		showOptionsWindow(false,true);
+		btnMenuPlay.setVisible(true);
+		btnMenuOptions.setVisible(true);
+		btnMenuScore.setVisible(true);
+		winOptions.setVisible(false);
+		//AudioManager.instance.onSettingsUpdated();
+	}
+	
+	/**
+	 * Updates the score text file.
+	 * @param name	Name of current player.
+	 */
+	public void updateScoreFile(String name)
+	{
+//		String[] scoreNames = new String[10];
+//		int[] scoreNums = new int[10];
+		File file = new File(Constants.SCORES);
+//		BufferedReader br = null;
+//		try
+//		{
+//			br = new BufferedReader(new FileReader(file));
+//		}
+//		catch (FileNotFoundException e)
+//		{
+//			e.printStackTrace();
+//		}
+//		
+//		String line;
+//		int i = 0;
+//		try
+//		{
+//			while((line = br.readLine()) != null)
+//			{
+//				scoreNames[i] = line;
+//				line = br.readLine();
+//				scoreNums[i] = Integer.parseInt(line);
+//				i++;
+//			}
+//		}
+//		catch (IOException e)
+//		{
+//			e.printStackTrace();
+//		}
+//		
+//		System.out.println("Before:");
+//		
+//		for(i = 0; i < 10; i++)
+//		{
+//			System.out.println(scoreNames[i]);
+//			System.out.println(scoreNums[i]);
+//		}
+		int i;
+		int newPosition = 10;
+		boolean notFound = true;
+		for (i = 0; i < 10 & notFound; i++)
+		{
+			if (score > scoreNums[i])
+			{
+				newPosition = i;
+				notFound = false;
+			}
+		}
+		
+		if (newPosition < 10)
+		{
+			i = 9;
+			while(i != newPosition)
+			{
+				scoreNums[i] = scoreNums[i-1];
+				scoreNames[i] = scoreNames[i-1];
+				i--;
+			}
+			scoreNums[i] = score;
+			scoreNames[i] = name;
+			System.out.println("placed "+ name+" in position "+i);
+		}
+		
+		System.out.println("sorted out score");
+		System.out.println("After:");
+		for(i = 0; i < 10; i++)
+		{
+			System.out.println(scoreNames[i]);
+			System.out.println(scoreNums[i]);
+		}
+		
+		System.out.println(name);
+		
+		FileWriter writer = null;
+		try
+		{
+			writer = new FileWriter(file, false);
+		}
+		catch (IOException e1)
+		{
+			e1.printStackTrace();
+		}
+		
+		for (i = 0; i < 10; i++)
+		{
+			try
+			{
+				writer.write(scoreNames[i] + "\n");
+				writer.write(scoreNums[i] + "\n");
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}	
+		}
+		
+		try
+		{
+			writer.close();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		stage.addActor(buildScoreWindowLayer());
+	}
+	
+	
 	/**
 	 * Creates the background layer of the menu screen.
 	 * 
@@ -245,6 +464,8 @@ public class MenuScreen extends AbstractGameScreen
 	 */
 	private void onPlayClicked()
 	{
+		AudioManager.instance.stopMusic();
+		AudioManager.instance.play(Assets.instance.music.song02);
 		game.setScreen(new GameScreen(game));
 	}
 
@@ -438,6 +659,8 @@ public class MenuScreen extends AbstractGameScreen
 		{
 			e.printStackTrace();
 		}
+		
+		scoresGotten = true;
 	}
 	
 	/**
@@ -730,5 +953,16 @@ public class MenuScreen extends AbstractGameScreen
 		float duration = animated ? 1.0f : 0.0f;
 		Touchable touchEnabled = visible ? Touchable.enabled : Touchable.disabled;
 		winScore.addAction(sequence(touchable(touchEnabled),alpha(alphaTo,duration)));
+	}
+	
+	/**
+	 * Makes the score entry menu fade in.
+	 */
+	private void showScoreEntryWindow (boolean visible,boolean animated) 
+	{
+		float alphaTo = visible ? 0.8f : 0.0f;
+		float duration = animated ? 1.0f : 0.0f;
+		Touchable touchEnabled = visible ? Touchable.enabled : Touchable.disabled;
+		winScoreEntry.addAction(sequence(touchable(touchEnabled),alpha(alphaTo,duration)));
 	}
 }

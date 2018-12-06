@@ -2,10 +2,12 @@ package com.packetpub.libgdx.rutter.game.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.packetpub.libgdx.rutter.game.Assets;
+import com.packetpub.libgdx.rutter.util.AudioManager;
 import com.packetpub.libgdx.rutter.util.Constants;
 
 /**
@@ -35,6 +37,7 @@ public class RiceBall extends AbstractGameObject
 	public JUMP_STATE jumpState;
 	public int bullets;
 	public int health;
+	public ParticleEffect dustParticles = new ParticleEffect();
 
 	public boolean isJumping = false;
 	
@@ -55,7 +58,7 @@ public class RiceBall extends AbstractGameObject
 		regBall = Assets.instance.riceball.riceball;
 		regBallHappy = Assets.instance.riceball.riceballhappy;
 		//Center image on game object
-		origin.set(dimension.x /2, dimension.y /2);
+		origin.set(dimension.x/2, dimension.y/2);
 //		//Bounding box for collision detection
 //		bounds.set(0,0,dimension.x, dimension.y);
 		//Set physics values
@@ -70,6 +73,9 @@ public class RiceBall extends AbstractGameObject
 		//Power-ups
 		bullets = 0;
 		health = 1;
+		
+		// Particles
+		dustParticles.load(Gdx.files.internal("particles/dust.pfx"), Gdx.files.internal("particles"));
 	}
 	
 	/**
@@ -106,6 +112,7 @@ public class RiceBall extends AbstractGameObject
 	 */
 	public void setGunPowerUp(int bullets)
 	{
+		AudioManager.instance.play(Assets.instance.sounds.reload);
 		if (this.bullets < bullets)
 		{
 			this.bullets = bullets;
@@ -143,15 +150,21 @@ public class RiceBall extends AbstractGameObject
 		}
 		else
 			health += changed;
+		if (changed < 0)
+		{
+			AudioManager.instance.play(Assets.instance.sounds.oof);
+		}
 		System.out.println("health is now " + health);
 	}
 	
-//	/**
-//	 * Updates the object, when called upon 60 times every secound
-//	 */
-//	@Override
-//	public void update (float deltaTime) {
-//		super.update(deltaTime);
+	/**
+	 * Updates the object, when called upon 60 times every secound
+	 */
+	@Override
+	public void update (float deltaTime)
+	{
+		super.update(deltaTime);
+		dustParticles.update(deltaTime);
 //		if (velocity.x != 0) {
 //			viewDirection = velocity.x < 0 ? VIEW_DIRECTION.LEFT : 
 //	VIEW_DIRECTION.RIGHT;
@@ -187,7 +200,7 @@ public class RiceBall extends AbstractGameObject
 //		}
 //		if (jumpState != JUMP_STATE.GROUNDED)
 //		super.updateMotionY(deltaTime);
-//	}
+	}
 	
 	/**
 	 * Renders the riceball in the world using the sprite batch
@@ -211,8 +224,14 @@ public class RiceBall extends AbstractGameObject
 		if (bullets > 0)
 		{
 			reg = Assets.instance.gun.gun;
-			batch.draw(reg.getTexture(),position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x, scale.y, rotation,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), false, false);
+			if (viewDirection == VIEW_DIRECTION.RIGHT)
+				batch.draw(reg.getTexture(),position.x+.75f, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x/2, scale.y/2, 0,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), false, false);
+			else if (viewDirection == VIEW_DIRECTION.LEFT)
+				batch.draw(reg.getTexture(),position.x-.75f, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x/2, scale.y/2, 0,reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(), true, false);
 		}
+		
+		// Draw Particles
+		dustParticles.draw(batch);
 	}
 	
 	/**

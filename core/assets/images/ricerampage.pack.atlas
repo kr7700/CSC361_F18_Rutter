@@ -1,82 +1,110 @@
 
 ricerampage.pack.png
-size: 1024,512
+size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+anim_bug
+  rotate: false
+  xy: 654, 318
+  size: 100, 200
+  orig: 100, 200
+  offset: 0, 0
+  index: 1
+anim_bug
+  rotate: false
+  xy: 756, 318
+  size: 100, 200
+  orig: 100, 200
+  offset: 0, 0
+  index: 2
 bug
   rotate: false
-  xy: 327, 158
+  xy: 858, 318
   size: 100, 200
   orig: 100, 200
   offset: 0, 0
   index: -1
+bullet
+  rotate: false
+  xy: 2, 2
+  size: 93, 50
+  orig: 93, 50
+  offset: 0, 0
+  index: -1
 dirt_edge
   rotate: false
-  xy: 262, 132
+  xy: 914, 650
   size: 63, 356
   orig: 63, 356
   offset: 0, 0
   index: -1
 dirt_middle
   rotate: false
-  xy: 2, 132
+  xy: 654, 650
   size: 258, 356
   orig: 258, 356
   offset: 0, 0
   index: -1
 fence
   rotate: false
-  xy: 2, 2
+  xy: 654, 520
   size: 256, 128
   orig: 256, 128
+  offset: 0, 0
+  index: -1
+goal
+  rotate: false
+  xy: 2, 356
+  size: 650, 650
+  orig: 650, 650
   offset: 0, 0
   index: -1
 grass
   rotate: false
-  xy: 327, 360
-  size: 256, 128
-  orig: 256, 128
+  xy: 2, 54
+  size: 600, 300
+  orig: 600, 300
   offset: 0, 0
   index: -1
 item_gun
   rotate: false
-  xy: 585, 388
+  xy: 912, 548
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 item_nori
   rotate: false
-  xy: 429, 181
+  xy: 706, 241
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 item_rice_grain
   rotate: false
-  xy: 260, 80
+  xy: 604, 62
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 riceball
   rotate: false
-  xy: 429, 258
+  xy: 604, 216
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 riceballhappy
   rotate: false
-  xy: 687, 388
+  xy: 604, 114
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 water_overlay
   rotate: false
-  xy: 531, 198
+  xy: 979, 846
   size: 32, 160
   orig: 32, 160
   offset: 0, 0
