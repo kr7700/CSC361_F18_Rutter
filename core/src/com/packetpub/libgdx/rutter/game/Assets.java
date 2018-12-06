@@ -100,12 +100,13 @@ public class Assets implements Disposable, AssetErrorListener
 		assetManager.load(Constants.TEXTURE_ATLAS_OBJECTS, TextureAtlas.class);
 		// load sounds
 		assetManager.load("sounds/jump.wav", Sound.class);
-		assetManager.load("sounds/jump_with_feather.wav", Sound.class);
-		assetManager.load("sounds/pickup_coin.wav", Sound.class);
-		assetManager.load("sounds/pickup_feather.wav", Sound.class);
+		assetManager.load("sounds/oof.wav", Sound.class);
+		assetManager.load("sounds/gunshot.wav", Sound.class);
+		assetManager.load("sounds/reload.wav", Sound.class);
 		assetManager.load("sounds/live_lost.wav", Sound.class);
 		// load music
 		assetManager.load("music/keith303_-_brand_new_highscore.mp3", Music.class);
+		assetManager.load("music/E1M1.mp3", Music.class);
 		// start loading assets and wait until finished
 		assetManager.finishLoading();
 		Gdx.app.debug(TAG, "# of assets loaded: " + assetManager.getAssetNames().size);
@@ -121,6 +122,8 @@ public class Assets implements Disposable, AssetErrorListener
 
 		// create game resource objects
 		fonts = new AssetFonts();
+		sounds = new AssetSounds(assetManager);
+		music = new AssetMusic(assetManager);
 		riceball = new AssetRiceBall(atlas);
 		bug = new AssetBug(atlas);
 		dirt = new AssetDirt(atlas);
@@ -363,10 +366,10 @@ public class Assets implements Disposable, AssetErrorListener
 	public class AssetSounds
 	{
 		public final Sound jump;
-		public final Sound jumpWithFeather;
-		public final Sound pickupCoin;
-		public final Sound pickupFeather;
 		public final Sound liveLost;
+		public final Sound gunshot;
+		public final Sound oof;
+		public final Sound reload;
 
 		/**
 		 * Gets all of the sounds.
@@ -375,10 +378,10 @@ public class Assets implements Disposable, AssetErrorListener
 		public AssetSounds(AssetManager am)
 		{
 			jump = am.get("sounds/jump.wav", Sound.class);
-			jumpWithFeather = am.get("sounds/jump_with_feather.wav", Sound.class);
-			pickupCoin = am.get("sounds/pickup_coin.wav", Sound.class);
-			pickupFeather = am.get("sounds/pickup_feather.wav", Sound.class);
 			liveLost = am.get("sounds/live_lost.wav", Sound.class);
+			gunshot = am.get("sounds/gunshot.wav", Sound.class);
+			oof = am.get("sounds/oof.wav", Sound.class);
+			reload = am.get("sounds/reload.wav", Sound.class);
 		}
 	}
 
@@ -389,6 +392,8 @@ public class Assets implements Disposable, AssetErrorListener
 	public class AssetMusic
 	{
 		public final Music song01;
+		public final Music song02;
+
 
 		/**
 		 * Gets all of the music.
@@ -397,6 +402,7 @@ public class Assets implements Disposable, AssetErrorListener
 		public AssetMusic(AssetManager am)
 		{
 			song01 = am.get("music/keith303_-_brand_new_highscore.mp3", Music.class);
+			song02 = am.get("music/E1M1.mp3", Music.class);
 		}
 	}
 }

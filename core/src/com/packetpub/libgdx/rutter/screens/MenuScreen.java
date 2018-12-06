@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.packetpub.libgdx.rutter.game.Assets;
+import com.packetpub.libgdx.rutter.util.AudioManager;
 import com.packetpub.libgdx.rutter.util.Constants;
 import com.packetpub.libgdx.rutter.util.GamePreferences;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
@@ -463,6 +464,8 @@ public class MenuScreen extends AbstractGameScreen
 	 */
 	private void onPlayClicked()
 	{
+		AudioManager.instance.stopMusic();
+		AudioManager.instance.play(Assets.instance.music.song02);
 		game.setScreen(new GameScreen(game));
 	}
 

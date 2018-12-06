@@ -18,6 +18,7 @@ import com.packetpub.libgdx.rutter.game.objects.RiceBall.JUMP_STATE;
 import com.packetpub.libgdx.rutter.game.objects.RiceGrain;
 import com.packetpub.libgdx.rutter.game.objects.WaterOverlay;
 import com.packetpub.libgdx.rutter.screens.MenuScreen;
+import com.packetpub.libgdx.rutter.util.AudioManager;
 import com.packetpub.libgdx.rutter.util.B2Listener;
 import com.packetpub.libgdx.rutter.util.CameraHelper;
 import com.packetpub.libgdx.rutter.util.Constants;
@@ -342,17 +343,20 @@ public class WorldController extends InputAdapter implements Disposable
 				}
 				if (Gdx.input.isKeyJustPressed(Keys.SPACE) && !level.riceBall.isJumping)
 				{
+					AudioManager.instance.play(Assets.instance.sounds.jump);
 					level.riceBall.isJumping = true;
 					level.riceBall.body.applyForceToCenter(0, 200, true);
 				}
 				if (Gdx.input.isKeyJustPressed(Keys.CONTROL_LEFT) && level.riceBall.bullets > 0)
 				{
+					AudioManager.instance.play(Assets.instance.sounds.gunshot);
 					level.riceBall.bullets--;
 					fireBullet();
 				}
 			}
 			if (level.riceBall.health <= 0)
 			{
+				AudioManager.instance.play(Assets.instance.sounds.liveLost);
 				lives--;
 				initLevel();
 			}
@@ -504,6 +508,8 @@ public class WorldController extends InputAdapter implements Disposable
 	 */
 	private void gameOver()
 	{
+		AudioManager.instance.stopMusic();
+		AudioManager.instance.play(Assets.instance.music.song01);
 		game.setScreen(new MenuScreen(game, true, score));
 	}
 	
