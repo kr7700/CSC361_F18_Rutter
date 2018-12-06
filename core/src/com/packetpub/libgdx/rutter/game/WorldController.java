@@ -335,17 +335,32 @@ public class WorldController extends InputAdapter implements Disposable
 				{
 					level.riceBall.body.applyForceToCenter(-50, 0, true);
 					level.riceBall.viewDirection = RiceBall.VIEW_DIRECTION.LEFT;
+					if (!level.riceBall.isJumping)
+					{
+						level.riceBall.dustParticles.setPosition(level.riceBall.position.x + level.riceBall.dimension.x / 2, level.riceBall.position.y);
+						level.riceBall.dustParticles.start();
+					}
 				}
 				else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 				{
 					level.riceBall.body.applyForceToCenter(50, 0, true);
 					level.riceBall.viewDirection = RiceBall.VIEW_DIRECTION.RIGHT;
+					if (!level.riceBall.isJumping)
+					{
+						level.riceBall.dustParticles.setPosition(level.riceBall.position.x + level.riceBall.dimension.x / 2, level.riceBall.position.y);
+						level.riceBall.dustParticles.start();
+					}
+				}
+				else
+				{
+					level.riceBall.dustParticles.allowCompletion();
 				}
 				if (Gdx.input.isKeyJustPressed(Keys.SPACE) && !level.riceBall.isJumping)
 				{
 					AudioManager.instance.play(Assets.instance.sounds.jump);
 					level.riceBall.isJumping = true;
 					level.riceBall.body.applyForceToCenter(0, 200, true);
+					level.riceBall.dustParticles.allowCompletion();
 				}
 				if (Gdx.input.isKeyJustPressed(Keys.CONTROL_LEFT) && level.riceBall.bullets > 0)
 				{
