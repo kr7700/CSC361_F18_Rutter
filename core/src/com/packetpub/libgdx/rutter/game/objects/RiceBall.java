@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.packetpub.libgdx.rutter.game.Assets;
+import com.packetpub.libgdx.rutter.util.AudioManager;
 import com.packetpub.libgdx.rutter.util.Constants;
 
 /**
@@ -106,6 +107,7 @@ public class RiceBall extends AbstractGameObject
 	 */
 	public void setGunPowerUp(int bullets)
 	{
+		AudioManager.instance.play(Assets.instance.sounds.reload);
 		if (this.bullets < bullets)
 		{
 			this.bullets = bullets;
@@ -143,6 +145,10 @@ public class RiceBall extends AbstractGameObject
 		}
 		else
 			health += changed;
+		if (changed < 0)
+		{
+			AudioManager.instance.play(Assets.instance.sounds.oof);
+		}
 		System.out.println("health is now " + health);
 	}
 	
