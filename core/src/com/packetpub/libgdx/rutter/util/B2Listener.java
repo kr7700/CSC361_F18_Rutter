@@ -114,7 +114,7 @@ public class B2Listener implements ContactListener
 						AudioManager.instance.play(Assets.instance.sounds.oof);
 						worldController.removeFlagged.add(fixtureA.getBody());
 						bug.killed = true;
-						worldController.score += bug.getScore();
+						bug.dead();
 						level.riceBall.changeHealth(-1);
 					}
 				}
@@ -142,6 +142,7 @@ public class B2Listener implements ContactListener
 					{
 						worldController.removeFlagged.add(fixtureB.getBody());
 						bug.killed = true;
+						bug.dead();
 						worldController.score += bug.getScore();
 					}
 				}
@@ -168,6 +169,7 @@ public class B2Listener implements ContactListener
 					{
 						worldController.removeFlagged.add(fixtureA.getBody());
 						bug.killed = true;
+						bug.dead();
 						worldController.score += bug.getScore();
 					}
 				}

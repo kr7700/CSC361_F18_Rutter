@@ -222,6 +222,7 @@ public class Assets implements Disposable, AssetErrorListener
 	{
 		public final AtlasRegion bug;
 		public final Animation animBug;
+		public final Animation animDead;
 
 		/**
 		 * Sets bug to hold the reference to the correct region from atlas.
@@ -237,6 +238,10 @@ public class Assets implements Disposable, AssetErrorListener
 			System.out.println("bug regions: "+regions.size);
 			animBug = new Animation(1.0f/2.0f, regions,
 					Animation.PlayMode.LOOP_PINGPONG);
+			regions = null;
+			regions = atlas.findRegions("anim_dead");
+			animDead = new Animation(1.0f/8.0f, regions,
+					Animation.PlayMode.NORMAL);
 		}
 	}
 
