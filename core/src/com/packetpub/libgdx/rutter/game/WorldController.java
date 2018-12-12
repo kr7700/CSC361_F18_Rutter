@@ -79,6 +79,7 @@ public class WorldController extends InputAdapter implements Disposable
 	public Level level;
 	public Game game;
 	public int lives = Constants.LIVES_START;
+	public int highscore = 0;
 	public int score = 0;
 	public boolean goalReached;
 	public boolean inWater = false;
@@ -117,6 +118,10 @@ public class WorldController extends InputAdapter implements Disposable
 	 */
 	public void initLevel()
 	{
+		if (score > highscore)
+		{
+			highscore = score;
+		}
 		score = 0;
 		goalReached = false;
 		inWater = false;
@@ -261,6 +266,7 @@ public class WorldController extends InputAdapter implements Disposable
 		bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(ball.position);
+		bodyDef.fixedRotation = true;
 		body = b2world.createBody(bodyDef);
 		ball.body = body;
 		polygonShape = new PolygonShape();
@@ -359,13 +365,16 @@ public class WorldController extends InputAdapter implements Disposable
 				{
 					AudioManager.instance.play(Assets.instance.sounds.jump);
 					level.riceBall.isJumping = true;
-					level.riceBall.body.applyForceToCenter(0, 200, true);
+					level.riceBall.body.applyForceToCenter(0, 350, true);
 					level.riceBall.dustParticles.allowCompletion();
 				}
 				if (Gdx.input.isKeyJustPressed(Keys.CONTROL_LEFT) && level.riceBall.bullets > 0)
 				{
 					AudioManager.instance.play(Assets.instance.sounds.gunshot);
 					level.riceBall.bullets--;
+			//		level.riceBall.gunfire.setPosition(level.riceBall.position.x + 150, level.riceBall.position.y + 50);
+			//		level.riceBall.gunfire.start();
+			//		level.riceBall.gunfire.allowCompletion();
 					fireBullet();
 				}
 			}
@@ -524,8 +533,8 @@ public class WorldController extends InputAdapter implements Disposable
 	private void gameOver()
 	{
 		AudioManager.instance.stopMusic();
-		AudioManager.instance.play(Assets.instance.music.song01);
-		game.setScreen(new MenuScreen(game, true, score));
+		AudioManager.instance.play(Assets.instance.music.menuMusic);
+		game.setScreen(new MenuScreen(game, true, highscore));
 	}
 	
 	/**
