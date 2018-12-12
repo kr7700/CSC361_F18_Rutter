@@ -15,6 +15,7 @@ public class Bug extends AbstractGameObject
 {
 	private TextureRegion regBug;
 	private Animation animBug;
+	public Animation animDead;
 
 	public boolean killed;
 	public boolean grounded = false;
@@ -37,6 +38,7 @@ public class Bug extends AbstractGameObject
 
 		regBug = Assets.instance.bug.bug;
 		animBug = Assets.instance.bug.animBug;
+		animDead = Assets.instance.bug.animDead;
 		System.out.println("bug frames:"+animBug.getKeyFrames().length);
 		setAnimation(animBug);
 
@@ -51,14 +53,32 @@ public class Bug extends AbstractGameObject
 	 */
 	public void render(SpriteBatch batch)
 	{
+		TextureRegion reg = null;
+		
 		if (killed)
+		{
+			if (!animation.isAnimationFinished(stateTime))
+			{
+				reg = animation.getKeyFrame(stateTime, true);
+				batch.draw(reg.getTexture(), position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x,
+						scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(),
+						false, false);
+			}
 			return;
-
-		TextureRegion reg = null;		
+		}
 		reg = animation.getKeyFrame(stateTime, true);
 		batch.draw(reg.getTexture(), position.x, position.y, origin.x, origin.y, dimension.x, dimension.y, scale.x,
 				scale.y, rotation, reg.getRegionX(), reg.getRegionY(), reg.getRegionWidth(), reg.getRegionHeight(),
 				false, false);
+	}
+	
+	/**
+	 * Changes animation and dimension for when bug is dead.
+	 */
+	public void dead()
+	{
+		setAnimation(animDead);
+		dimension.set(2,2);
 	}
 
 	/**
