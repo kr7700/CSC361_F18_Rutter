@@ -42,8 +42,8 @@ highscores-up
 info
   rotate: false
   xy: 2, 5
-  size: 330, 85
-  orig: 330, 85
+  size: 328, 85
+  orig: 328, 85
   offset: 0, 0
   index: -1
 logo
