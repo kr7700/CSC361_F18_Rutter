@@ -99,14 +99,17 @@ public class Assets implements Disposable, AssetErrorListener
 		// load texture atlas
 		assetManager.load(Constants.TEXTURE_ATLAS_OBJECTS, TextureAtlas.class);
 		// load sounds
+		assetManager.load("sounds/crunch.wav", Sound.class);
 		assetManager.load("sounds/jump.wav", Sound.class);
 		assetManager.load("sounds/oof.wav", Sound.class);
 		assetManager.load("sounds/gunshot.wav", Sound.class);
 		assetManager.load("sounds/reload.wav", Sound.class);
+		assetManager.load("sounds/wrapper.wav", Sound.class);
 		assetManager.load("sounds/live_lost.wav", Sound.class);
 		// load music
 		assetManager.load("music/keith303_-_brand_new_highscore.mp3", Music.class);
 		assetManager.load("music/E1M1.mp3", Music.class);
+		assetManager.load("music/doom2m10.mp3", Music.class);
 		// start loading assets and wait until finished
 		assetManager.finishLoading();
 		Gdx.app.debug(TAG, "# of assets loaded: " + assetManager.getAssetNames().size);
@@ -370,6 +373,8 @@ public class Assets implements Disposable, AssetErrorListener
 		public final Sound gunshot;
 		public final Sound oof;
 		public final Sound reload;
+		public final Sound wrapper;
+		public final Sound crunch;
 
 		/**
 		 * Gets all of the sounds.
@@ -382,6 +387,8 @@ public class Assets implements Disposable, AssetErrorListener
 			gunshot = am.get("sounds/gunshot.wav", Sound.class);
 			oof = am.get("sounds/oof.wav", Sound.class);
 			reload = am.get("sounds/reload.wav", Sound.class);
+			wrapper = am.get("sounds/wrapper.wav", Sound.class);
+			crunch = am.get("sounds/crunch.wav", Sound.class);
 		}
 	}
 
@@ -393,7 +400,7 @@ public class Assets implements Disposable, AssetErrorListener
 	{
 		public final Music song01;
 		public final Music song02;
-
+		public final Music menuMusic;
 
 		/**
 		 * Gets all of the music.
@@ -403,6 +410,7 @@ public class Assets implements Disposable, AssetErrorListener
 		{
 			song01 = am.get("music/keith303_-_brand_new_highscore.mp3", Music.class);
 			song02 = am.get("music/E1M1.mp3", Music.class);
+			menuMusic = am.get("music/doom2m10.mp3", Music.class);
 		}
 	}
 }

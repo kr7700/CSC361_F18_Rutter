@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.packetpub.libgdx.rutter.game.Assets;
 import com.packetpub.libgdx.rutter.game.Level;
 import com.packetpub.libgdx.rutter.game.WorldController;
 import com.packetpub.libgdx.rutter.game.objects.Bug;
@@ -60,6 +61,7 @@ public class B2Listener implements ContactListener
 				{
 					if (fixtureA.getBody().getUserData().equals(grain))
 					{
+						AudioManager.instance.play(Assets.instance.sounds.crunch);
 						worldController.removeFlagged.add(fixtureA.getBody());
 						grain.collected = true;
 						worldController.score += grain.getScore();
@@ -72,6 +74,7 @@ public class B2Listener implements ContactListener
 				{
 					if (fixtureA.getBody().getUserData().equals(nori))
 					{
+						AudioManager.instance.play(Assets.instance.sounds.wrapper);
 						worldController.removeFlagged.add(fixtureA.getBody());
 						nori.collected = true;
 						worldController.score += nori.getScore();
@@ -85,6 +88,7 @@ public class B2Listener implements ContactListener
 				{
 					if (fixtureA.getBody().getUserData().equals(gun))
 					{
+						AudioManager.instance.play(Assets.instance.sounds.reload);
 						worldController.removeFlagged.add(fixtureA.getBody());
 						gun.collected = true;
 						worldController.score += gun.getScore();
@@ -107,6 +111,7 @@ public class B2Listener implements ContactListener
 				{
 					if (fixtureA.getBody().getUserData().equals(bug))
 					{
+						AudioManager.instance.play(Assets.instance.sounds.oof);
 						worldController.removeFlagged.add(fixtureA.getBody());
 						bug.killed = true;
 						worldController.score += bug.getScore();

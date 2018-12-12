@@ -38,6 +38,7 @@ public class RiceBall extends AbstractGameObject
 	public int bullets;
 	public int health;
 	public ParticleEffect dustParticles = new ParticleEffect();
+//	public ParticleEffect gunfire = new ParticleEffect();
 
 	public boolean isJumping = false;
 	
@@ -76,6 +77,7 @@ public class RiceBall extends AbstractGameObject
 		
 		// Particles
 		dustParticles.load(Gdx.files.internal("particles/dust.pfx"), Gdx.files.internal("particles"));
+//		gunfire.load(Gdx.files.internal("particles/gunfire2.p"), Gdx.files.internal("particles"));
 	}
 	
 	/**
@@ -112,7 +114,6 @@ public class RiceBall extends AbstractGameObject
 	 */
 	public void setGunPowerUp(int bullets)
 	{
-		AudioManager.instance.play(Assets.instance.sounds.reload);
 		if (this.bullets < bullets)
 		{
 			this.bullets = bullets;
@@ -150,10 +151,6 @@ public class RiceBall extends AbstractGameObject
 		}
 		else
 			health += changed;
-		if (changed < 0)
-		{
-			AudioManager.instance.play(Assets.instance.sounds.oof);
-		}
 		System.out.println("health is now " + health);
 	}
 	
@@ -165,6 +162,7 @@ public class RiceBall extends AbstractGameObject
 	{
 		super.update(deltaTime);
 		dustParticles.update(deltaTime);
+	//	gunfire.update(deltaTime);
 //		if (velocity.x != 0) {
 //			viewDirection = velocity.x < 0 ? VIEW_DIRECTION.LEFT : 
 //	VIEW_DIRECTION.RIGHT;
@@ -232,6 +230,7 @@ public class RiceBall extends AbstractGameObject
 		
 		// Draw Particles
 		dustParticles.draw(batch);
+	//	gunfire.draw(batch);
 	}
 	
 	/**
