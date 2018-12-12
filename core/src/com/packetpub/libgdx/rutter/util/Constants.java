@@ -39,5 +39,5 @@ public class Constants
 	public static final int LIVES_START = 3;
 	
 	// Delay after game over
-	public static final float TIME_DELAY_GAME_OVER = 3;
+	public static final float TIME_DELAY_GAME_OVER = .5f;
 }
