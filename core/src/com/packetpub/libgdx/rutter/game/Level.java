@@ -155,7 +155,7 @@ public class Level
 				else if (BLOCK_TYPE.PLAYER_SPAWNPOINT.sameColor(currentPixel))
 				{
 					obj = new RiceBall();
-					offsetHeight = -1.5f;
+					offsetHeight = -3.5f;
 					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
 					riceBall = (RiceBall) obj;
 				}
@@ -200,9 +200,10 @@ public class Level
 				else if(BLOCK_TYPE.GOAL.sameColor(currentPixel))
 				{
 					obj = new Goal();
-					offsetHeight = -6f;
+					offsetHeight = -16f;
 					obj.position.set(pixelX, baseHeight * obj.dimension.y + offsetHeight);
 					goal = (Goal)obj;
+					System.out.println("goal at x:"+ goal.position.x + " y: "  + goal.position.y);
 				}
 				
 				//unknown object/pixel color
