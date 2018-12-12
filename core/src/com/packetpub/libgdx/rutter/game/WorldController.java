@@ -372,6 +372,9 @@ public class WorldController extends InputAdapter implements Disposable
 				{
 					AudioManager.instance.play(Assets.instance.sounds.gunshot);
 					level.riceBall.bullets--;
+			//		level.riceBall.gunfire.setPosition(level.riceBall.position.x + 150, level.riceBall.position.y + 50);
+			//		level.riceBall.gunfire.start();
+			//		level.riceBall.gunfire.allowCompletion();
 					fireBullet();
 				}
 			}
@@ -530,7 +533,7 @@ public class WorldController extends InputAdapter implements Disposable
 	private void gameOver()
 	{
 		AudioManager.instance.stopMusic();
-		AudioManager.instance.play(Assets.instance.music.song01);
+		AudioManager.instance.play(Assets.instance.music.menuMusic);
 		game.setScreen(new MenuScreen(game, true, highscore));
 	}
 	
