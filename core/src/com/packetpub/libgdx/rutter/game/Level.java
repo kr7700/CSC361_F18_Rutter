@@ -218,9 +218,9 @@ public class Level
 			}
 		}
 		//decorations
-		background = new Background(pixmap.getWidth());
+		background = new Background(pixmap.getWidth() *2);
 		background.position.set(-1, -1);
-		waterOverlay = new WaterOverlay(pixmap.getWidth());
+		waterOverlay = new WaterOverlay(pixmap.getWidth() *2);
 		waterOverlay.position.set(0, -3.75f);
 		
 		//free memory
